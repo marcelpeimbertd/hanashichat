@@ -1,0 +1,27 @@
+[
+    {
+        "nickname": "leaf",
+        "email": "leaf@hanashichat.com",
+        "password": "1",
+        "contacts": [
+            {
+                "email": "leaf2@hanashichat.com",
+                "conversation": "1"
+            }
+        ],
+        "groups": [],
+        "profile": "../images/users/:id/image.png"
+    },
+    {
+        "nickname": "leaf2",
+        "email": "leaf2@hanashichat.com",
+        "password": "2",
+        "contacts": [
+            {
+                "email": "leaf@hanashichat.com",
+                "conversation": "1"
+            }
+        ],
+        "profile": "../images/users/:id/image.png"
+    }
+]

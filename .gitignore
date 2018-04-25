@@ -1,0 +1,7 @@
+dist/*
+!dist/public
+dist/public/js
+!dist/public/images
+
+node_modules/**/*
+package-lock.json

@@ -1,0 +1,21 @@
+[
+    {
+        "id": "0",
+        "chat": "general",
+        "messages": []
+    },
+    {
+        "id": "1",
+        "chat": "private_1",
+        "name": "",
+        "emails": ["leaf@hanashichat.com","leaf2@hanashichat.com"],
+        "messages": ["1"]
+    },
+    {
+        "id": "2",
+        "chat": "group_1",
+        "name": "",
+        "emails": ["leaf@hanashichat.com","leaf2@hanashichat.com"],
+        "messages": []
+    }
+]
