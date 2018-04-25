@@ -1,25 +1,24 @@
 {
   "name": "hanashichat",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "description": "A chat to interact with new people or old friends",
   "main": "/dist/server/index.js",
   "scripts": {
     "test": "jest",
-    "start": "node dist/server",
-    "start-development": "nodemon dist/server",
-    "build": "webpack && tsc -p tsconfig.server.json",
-    "build-watch": "webpack -w",
-    "build-server": "tsc -p tsconfig.server.json",
-    "build-client": "webpack"
+    "build": "webpack",
+    "build-watch": "webpack -w"
   },
-  "repository": "https://github.com/jmarcelfpg/hanashichat.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jmarcelfpg/hanashichat.git"
+  },
   "keywords": [
     "chat",
     "leaf",
     "leaves"
   ],
-  "author": "jmarcelfpg <jmarcel_fpg@hotmail.com>",
-  "license": "MIT",
+  "author": "JMarcelFPG",
+  "license": "ISC",
   "bugs": {
     "url": "https://github.com/jmarcelfpg/hanashichat/issues"
   },
@@ -41,7 +40,6 @@
     "babel-core": "^7.0.0-bridge.0",
     "babel-loader": "^8.0.0-beta.2",
     "babel-plugin-module-resolver": "^3.1.1",
-    "nodemon": "^1.17.3",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
     "typescript": "^2.8.3",

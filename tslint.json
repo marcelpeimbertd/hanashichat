@@ -9,7 +9,8 @@
             true,
             "single",
             "jsx-double"
-        ]
+        ],
+        "no-console": false
     },
     "rulesDirectory": []
 }
