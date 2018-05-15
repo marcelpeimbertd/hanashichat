@@ -8,13 +8,14 @@ import Register from './../components/register';
 // development
 const getMessages = require;
 const messages = getMessages('../../../../db/seed/messages.json');
+const conversation = getMessages('../../../../db/seed/conversations.json');
+const sendMessage = (message: string) => undefined;
 
 export default (
     <BrowserRouter>
         <div>
-            <Route exact path="/" render={() => <div>
-                <Login prop="" />
-            </div>} />
+            <Route exact path="/" render={() =>
+                <Login prop="" />} />
             <Route path="/login" render={() => <Login prop="" />} />
             <Route path="/chat" render={() => <Chat messages={messages} />} />
             <Route path="/register" render={() => <Register prop="" />} />

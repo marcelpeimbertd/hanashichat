@@ -1,4 +1,6 @@
+import axios from 'axios';
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 interface ILoginProps {
     prop: string;
@@ -23,6 +25,7 @@ class Register extends React.Component<ILoginProps> {
                 <input type="password" name="" id="confirmPass" placeholder="Confirm Password" required />
                 <input type="submit" value="Register"/>
             </form>
+            <Link to="/login">LogIn</Link>
         </div>;
     }
 }

@@ -10,7 +10,7 @@ interface IMessage {
     date: string;
 }
 
-interface IMessagePayload {
+interface IMessagesPayload {
     messages: IMessages;
 }
 
@@ -21,9 +21,9 @@ interface IMessagesState {
 const FETCH_MESSAGES = 'FETCH_MESSAGES';
 const initialState: IMessagesState = { all: [] };
 
-export const fetchMessagesActionCreator = ReduxActions.createAction<IMessagePayload>(FETCH_MESSAGES);
+export const fetchMessagesActionCreator = ReduxActions.createAction<IMessagesPayload>(FETCH_MESSAGES);
 
 export const handleMessage = ReduxActions
-    .handleAction<{ all: IMessages }, IMessagePayload>(
+    .handleAction<{ all: IMessages } | undefined, IMessagesPayload>(
         FETCH_MESSAGES,
         (state, { payload = { messages: [] } }) => ({ ...state, all: payload.messages }), initialState);

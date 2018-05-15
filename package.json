@@ -1,6 +1,6 @@
 {
   "name": "hanashichat",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A chat to interact with new people or old friends",
   "main": "/dist/server/index.js",
   "scripts": {
@@ -8,11 +8,10 @@
     "start": "node dist/server",
     "start-development": "nodemon dist/server --watch dist",
     "build": "webpack && tsc -p tsconfig.server.json",
-    "build-watch": "concurrently \"webpack -w\" \"tsc -p tsconfig.server.json -w\" \"nodemon dist/server --watch dist\"",
+    "build-watch": "concurrently \"mongod \" \"webpack -w\" \"tsc -p tsconfig.server.json -w\" \"nodemon dist/server -r dotenv/config --watch dist\"",
+    "build-watchdebbug": "concurrently \"mongod \" \"webpack -w\" \"tsc -p tsconfig.server.json -w\" \"nodemon --inspect dist/server -r dotenv/config --watch dist\"",
     "build-server": "tsc -p tsconfig.server.json",
-    "build-serverWatch": "tsc -p tsconfig.server.json -w",
-    "build-client": "webpack -w",
-    "build-clientWatch": "webpack"
+    "build-client": "webpack"
   },
   "repository": "https://github.com/jmarcelfpg/hanashichat.git",
   "keywords": [
@@ -37,8 +36,12 @@
     "@babel/preset-react": "^7.0.0-beta.46",
     "@babel/preset-stage-3": "^7.0.0-beta.46",
     "@babel/preset-typescript": "^7.0.0-beta.46",
+    "@types/body-parser": "^1.17.0",
     "@types/express": "^4.11.1",
+    "@types/express-session": "^1.15.8",
     "@types/jest": "^22.2.3",
+    "@types/mongoose": "^5.0.13",
+    "@types/passport": "^0.4.5",
     "@types/react": "^16.3.12",
     "@types/react-dom": "^16.0.5",
     "@types/react-redux": "^5.0.18",
@@ -72,8 +75,16 @@
     "webpack-cli": "^2.0.15"
   },
   "dependencies": {
+    "@types/dotenv": "^4.0.3",
+    "@types/passport-local": "^1.0.33",
     "@types/socket.io": "^1.4.33",
+    "body-parser": "^1.18.3",
+    "dotenv": "^5.0.1",
     "express": "^4.16.3",
+    "express-session": "^1.15.6",
+    "mongoose": "^5.1.0",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
     "socket.io": "^2.1.0"
   },
   "jest": {
