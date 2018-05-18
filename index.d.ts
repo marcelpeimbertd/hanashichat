@@ -6,12 +6,14 @@ declare namespace Base {
         email: any;
         password: any;
         provider: any;
+        conversations: any;
+        contacts: any;
     }
 
     export interface IConversation {
-        messages: any;
-        participants: any[];
-        type: string;
+        messagesid: any;
+        participants: any;
+        convesationType: any;
     }
 
     export type Versionable<T> = T & { current: any, previous: Array<any> };
@@ -19,7 +21,7 @@ declare namespace Base {
 
 declare namespace Model {
     export interface IConversation {
-        messages: any;
+        messagesid: any;
         participants: any[];
         type: string;
     }
@@ -27,3 +29,47 @@ declare namespace Model {
 
 declare type Indexable<T> = T & { _id: any; };
 declare type Versionable<T> = { current: T, previous: Array<T> };
+
+declare namespace Store {
+    export type IMessages = IMessage[];
+
+    export interface IMessage {
+        id: string;
+        message: string;
+        email: string;
+        date: string;
+    }
+
+    export interface IMessagesPayload {
+        messages: IMessages;
+    }
+
+    export interface IMessagesState {
+        messages: IMessages;
+    }
+
+    export type IUsers = IUser[];
+
+    export interface IUser {
+        id: string;
+        contacts: string[];
+        conversations: string[];
+        email: string;
+        firstName: string;
+        lastName: string;
+        username: string;
+    }
+
+    export interface IUsersPayload {
+        users: IUsers;
+    }
+
+    export interface IUserPayload {
+        user: IUser;
+    }
+
+    export interface IUsersState {
+        users: IUsers;
+        user: IUser;
+    }
+}

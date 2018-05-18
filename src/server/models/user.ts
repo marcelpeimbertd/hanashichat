@@ -4,6 +4,8 @@ import crypto from 'crypto';
 
 type UserType = Base.IUser & { salt: any };
 const userSchema: UserType = {
+    contacts: [{type: Schema.Types.ObjectId, ref: 'User'}],
+    conversations: [{type: Schema.Types.ObjectId, ref: 'Conversation'}],
     email: { type: String, unique: true, lowercase: true, trim: true },
     firstName: { type: String, trim: true },
     lastName: { type: String, trim: true },

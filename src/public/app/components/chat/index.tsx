@@ -1,3 +1,4 @@
+import axios from 'axios';
 import moment from 'moment';
 import React from 'react';
 import io from 'socket.io-client';
@@ -64,6 +65,7 @@ class Chat extends React.Component<IChatProps> {
         return <div className="chatbox">
             {this.splitMessages()}
             <input {...inputOptions} />
+            <button type="button">Send</button>
         </div>;
     }
 }

@@ -10,12 +10,47 @@ export default class UserController extends Controller {
     // Create a new controller method that log in a 'regular' users
     public login: RequestHandler = (req, res) => {
         if (req.user) {
-            res.send(JSON.stringify(req.user));
+            const successMessage = {
+                redirect: 'chat',
+                status: 1,
+                user: this.getUserFields((req.user as Store.IUser)),
+            };
+            res.send(JSON.stringify(successMessage));
+        } else {
+            // Redirect the user back to the main application page
+            res.redirect('error');
         }
-        // Redirect the user back to the main application page
-        res.send('login');
     }
-
+    // Create a new controller method that log in a 'regular' users
+    public loginFails: RequestHandler = (req, res) => {
+        const err = req.flash('error');
+        const failureMessage = {
+            err,
+            message: err[0],
+            status: 0,
+        };
+        res.send(JSON.stringify(failureMessage));
+    }
+    // Create a new controller method that check if user is logged
+    public isLoggedIn: RequestHandler = (req, res) => {
+        let redirect = req.baseUrl;
+        if (req.user) {
+            redirect = redirect !== '/' ? redirect : '/chat';
+            const successMessage = {
+                redirect: 'chat',
+                status: 1,
+                user: this.getUserFields((req.user as Store.IUser)),
+            };
+            res.send(JSON.stringify(successMessage));
+        } else {
+            redirect = redirect !== '/' ? redirect : '/login';
+            const notLoggedMessage = {
+                redirect,
+                status: 0,
+            };
+            res.send(JSON.stringify(notLoggedMessage));
+        }
+    }
     // Create a new controller method that creates new 'regular' users
     public register: (/* transporter: Transporter */) => RequestHandler = (/* transporter */) =>
         (req, res, next) => {
@@ -25,8 +60,7 @@ export default class UserController extends Controller {
             if (!req.user) {
                 // Create a new 'User' model instance
                 const user = new User(req.body);
-                user.comments = '';
-                var message = null;
+                // var message = null;
 
                 // Set the user provider property
                 user.provider = 'local';
@@ -36,12 +70,18 @@ export default class UserController extends Controller {
                     // If an error occurs, use flash messages to report the error
                     if (err) {
                         // Use the error handling method to get the error message
-                        var message = this.getErrorMessage(err);
+                        const message = this.getErrorMessage(err);
                         // Set the flash messages
                         req.flash('error', message);
 
+                        const failureMessage = {
+                            err,
+                            message,
+                            status: 0,
+                        };
+
                         // Redirect the user back to the signup page
-                        return res.redirect('/signup');
+                        return res.send(JSON.stringify(failureMessage));
                     }
 
                     /* transporter.sendMail({
@@ -53,33 +93,47 @@ export default class UserController extends Controller {
                     req.login(user, function (err) {
                         // If a login error occurs move to the next middleware
                         if (err) { return console.log(err); }
-
+                        const successMessage = {
+                            redirect: 'chat',
+                            status: 1,
+                            userid: user.id,
+                        };
                         // Redirect the user back to the main application page
-                        return res.redirect('/board');
+                        return res.send(JSON.stringify(successMessage));
                     });
                 });
             } else {
-                return res.redirect('/signin');
+                const successMessage = {
+                    redirect: 'chat',
+                    status: 1,
+                    userid: req.user.id,
+                };
+                return res.send(JSON.stringify(successMessage));
             }
         }
     // Create a new controller method for signing out
-    public signout: RequestHandler = (req, res) => {
+    public logout: RequestHandler = (req, res) => {
         // Use the Passport 'logout' method to logout
         req.logout();
+        const successMessage = {
+            redirect: 'login',
+            status: 0,
+            userid: '',
+        };
         // Redirect the user back to the main application page
-        res.redirect('/signin');
+        res.send(JSON.stringify(successMessage));
     }
     // Create a new controller method for forgot Pass
-    public forgotPass: (transporter: Transporter) => RequestHandler = (transporter) =>
+    public forgotPass: (/* transporter: Transporter */) => RequestHandler = (/* transporter */) =>
         (req, res) => {
             User.findOne({ username: req.body.username })
                 .then((user) => {
                     if (user) {
-                        transporter.sendMail({
-                            subject: 'Link para resetear el password',
-                            text: 'url with code for resetPass',
-                            to: user.email,
-                        });
+                        /*  transporter.sendMail({
+                             subject: 'Link para resetear el password',
+                             text: 'url with code for resetPass',
+                             to: user.email,
+                         }); */
 
                         // Redirect the user back to the main application page
                         res.redirect('/signin');
@@ -98,11 +152,8 @@ export default class UserController extends Controller {
             User.find()
                 .then((Users) => {
                     const users = Users.map((user) => {
-                        const { firstName, lastName, visits, confirmation: {
-                            current: { status } },
-                            fee: {
-                                current: { ammout } } } = user;
-                        return { firstName, lastName, visits, confirmation: status, fee: ammout };
+                        const { firstName, lastName } = user;
+                        return { firstName, lastName };
                     });
                     res.send(users);
                 })
@@ -110,7 +161,7 @@ export default class UserController extends Controller {
                     // If an error occurs, use flash messages to report the error
                     if (err) {
                         // Use the error handling method to get the error message
-                        var message = this.getErrorMessage(err);
+                        const message = this.getErrorMessage(err);
                         // Set the flash messages
                         req.flash('error', message);
 
@@ -129,4 +180,12 @@ export default class UserController extends Controller {
                 ? 'Username already exists' : 'Something went wrong'
             : error ? error.message : 'Something is bad in the code';
     };
+    // Get the user fields
+    private getUserFields({ id, contacts, conversations, email,
+        firstName, lastName, username }: Store.IUser) {
+        return {
+            contacts, conversations, email,
+            firstName, id, lastName, username,
+        };
+    }
 }

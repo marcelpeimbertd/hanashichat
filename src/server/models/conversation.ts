@@ -1,25 +1,23 @@
 import { Document, model, Model, Schema, SchemaDefinition } from 'mongoose';
-const { ObjectId, Number, String } = Schema.Types;
+const { ObjectId, String, Number } = Schema.Types;
+import crypto from 'crypto';
 
-type ConversationType = Base.Versionable<{}>;
+type ConversationType = Base.IConversation & { messagesid: any };
 export const conversationSchema: ConversationType = {
-    current: new Schema({
-        feedback: String,
-        status: Number,
-    }),
-    previous: [{
-        feedback: String,
-        status: Number,
-    }],
+    convesationType: String,
+    messagesid: {type: Schema.Types.ObjectId, ref: 'Messages'},
+    participants: [{type: Schema.Types.ObjectId, ref: 'User'}],
 };
 const ConversationSchema = new Schema(
     (conversationSchema as ConversationType),
-    { _id: false, timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } });
+    { timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } });
 
-export type ConversationDocumentType = Versionable<Model.IConversation> & Document;
-interface IConversationSchemaMethods { }
+interface IConversationSchemaMethods {
+}
+export type ConversationDocumentType = ConversationType & Document;
 type ConversationSchemaType = ConversationDocumentType & IConversationSchemaMethods;
 type ConversationModelType = Model<ConversationSchemaType>;
+
 const Conversation: ConversationModelType =
-    model<ConversationSchemaType, ConversationModelType>('Confirmation', ConversationSchema);
+    model<ConversationSchemaType, ConversationModelType>('Conversation', ConversationSchema);
 export default Conversation;

@@ -9,14 +9,24 @@ export default function setAPIRoutes(app: Express, passport: PassportStatic/* , 
     const userController = new UserController();
 
     // // Set up the 'initial' routes
-    // Set up the 'signup' routes
+    // Set up the 'register' routes
     api.route('/register')
         .post(userController.register(/* transporter */));
-    // Set up the 'signin' routes
+    // Set up the 'login' routes
     api.route('/login')
-        .post(/* passport.authenticate('local'), */ userController.login);
-    // Set up the 'signout' route
-    api.get('/signout', userController.signout);
+        .post(passport.authenticate('local', {
+            failureFlash: 'Wrong username or Password',
+            failureMessage: 'Wrong username or Password',
+            failureRedirect: '/login/error',
+        }), userController.login);
+    // Set up the 'login Error' routes
+    api.route('/login/error')
+        .get(userController.loginFails);
+    // Set up the 'login Error' routes
+    api.route('/isloggedin')
+        .get(userController.isLoggedIn);
+    // Set up the 'logout' route
+    api.get('/logout', userController.logout);
 
     // Request for info
     // Set up the 'messages' routes

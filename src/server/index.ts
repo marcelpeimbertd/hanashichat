@@ -1,7 +1,10 @@
 import * as bodyParser from 'body-parser';
+import compress from 'compression';
+import flash from 'connect-flash';
 import express from 'express';
 import session from 'express-session';
 import http from 'http';
+import morgan from 'morgan';
 import path from 'path';
 import socketIO from 'socket.io';
 import initMongoose from './config/mongoose';
@@ -11,11 +14,12 @@ import setApiRoutes from './routes/apiRoutes';
 try {
     const app = express();
     const passport = initPassport();
-    /* if (process.env.NODE_ENV === 'development') {
+    initMongoose();
+    if (process.env.NODE_ENV === 'development') {
         app.use(morgan('dev'));
     } else if (process.env.NODE_ENV === 'production') {
         app.use(compress());
-    } */
+    }
 
     app.set('port', (process.env.PORT || 3000));
 
@@ -27,13 +31,15 @@ try {
         saveUninitialized: true,
         secret: 'config.sessionSecret',
     }));
+    app.use(flash());
     app.use(passport.initialize());
     app.use(passport.session());
 
     setApiRoutes(app, passport);
     app.use(express.static(path.join(__dirname, '..', 'public')));
     app.use('*', (req, res, next) => {
-        res.sendFile(path.join(__dirname, '..', 'public', 'index.html')); });
+        res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+    });
 
     const serverHTTP = http.createServer(app);
     const io = socketIO(serverHTTP);
