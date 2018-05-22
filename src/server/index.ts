@@ -55,6 +55,6 @@ try {
 
     serverHTTP.listen(3000, () => { console.log('server running on port 3000'); });
 
-} catch {
-    console.error(new Error('error in the Express configuration'));
+} catch (err) {
+    console.error(new Error(err));
 }

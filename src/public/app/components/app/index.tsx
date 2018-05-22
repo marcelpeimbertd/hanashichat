@@ -23,15 +23,13 @@ class App extends React.Component<IAppProps> {
                         throw data;
                     }
                     if (data.user) {
-                        console.log(data.user);
-                        this.props.fetchUser(data.user);
+                        this.props.fetchUser({user: data.user});
                     }
                 })
                 .catch((error) => {
                     console.error(error);
                 });
         }
-        console.log(this.props.user);
     }
     public render() {
         return this.props.children;

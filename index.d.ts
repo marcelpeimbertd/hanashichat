@@ -72,4 +72,12 @@ declare namespace Store {
         users: IUsers;
         user: IUser;
     }
+
+    interface IConversation {
+        id: string;
+        chat: string;
+        name: string;
+        emails: string;
+        messages: Store.IMessage[];
+    }
 }

@@ -26,7 +26,20 @@ export default function setAPIRoutes(app: Express, passport: PassportStatic/* , 
     api.route('/isloggedin')
         .get(userController.isLoggedIn);
     // Set up the 'logout' route
-    api.get('/logout', userController.logout);
+    api.route('/logout')
+        .get(userController.logout);
+
+    // Routing for users
+    api.route('/users')
+        .post(userController.getUsersByUsernameOrEmail);
+
+    // Routing for users
+    api.route('/contacts')
+        .post(userController.getContactsByID);
+
+    // Routing add contact
+    api.route('/add')
+        .post(userController.addContact);
 
     // Request for info
     // Set up the 'messages' routes

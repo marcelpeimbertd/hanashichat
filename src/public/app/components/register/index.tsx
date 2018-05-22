@@ -34,7 +34,7 @@ class Register extends React.Component<ILoginProps> {
         return <div>
             <form onSubmit={this.sendRegister}>
                 <label htmlFor="username">UserName:</label>
-                <input type="text" name="username" id="username" placeholder="Enter User Name" required />
+                <input type="text" name="username" id="username" placeholder="Enter User Name" min="5" required />
                 <label htmlFor="lastName">LastName:</label>
                 <input type="text" name="lastName" id="lastName" placeholder="Enter Last Name" required />
                 <label htmlFor="firstName">FirstName:</label>

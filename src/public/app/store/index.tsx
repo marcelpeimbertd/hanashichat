@@ -1,4 +1,8 @@
-import { ConnectedApp } from './connections';
+import React from 'react';
+import { Provider } from 'react-redux';
+import routes from './routes';
 import { store } from './store';
 
-export { ConnectedApp, store };
+export default (<Provider store={store}>
+        {routes}
+</Provider>);

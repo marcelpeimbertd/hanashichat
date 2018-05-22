@@ -7,10 +7,10 @@ interface ILoginProps {
     fetchUser: (t1: Store.IUserPayload) => Action<Store.IUserPayload>;
 }
 class Login extends React.Component<ILoginProps> {
-    constructor(props: ILoginProps){
+    constructor(props: ILoginProps) {
         super(props);
     }
-    public sendLogin(event: React.FormEvent<HTMLFormElement>) {
+    public sendLogin = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const info: { [key: string]: string } = {
             password: '',
@@ -25,7 +25,7 @@ class Login extends React.Component<ILoginProps> {
                 if (data.err) {
                     throw data;
                 }
-                this.props.fetchUser(data.user);
+                this.props.fetchUser({ user: data.user });
                 window.location.assign(data.redirect);
             })
             .catch((error) => {
