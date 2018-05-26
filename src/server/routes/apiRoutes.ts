@@ -1,12 +1,14 @@
 import * as express from 'express';
 import { Express } from 'express-serve-static-core';
 import { PassportStatic } from 'passport';
+import ConversationController from '../controllers/conversationController';
 import UserController from '../controllers/userController';
 import User from '../models/user';
 
 export default function setAPIRoutes(app: Express, passport: PassportStatic/* , transporter: Transporter */) {
     const api = express.Router();
     const userController = new UserController();
+    const conversationController = new ConversationController();
 
     // // Set up the 'initial' routes
     // Set up the 'register' routes
@@ -38,8 +40,13 @@ export default function setAPIRoutes(app: Express, passport: PassportStatic/* , 
         .post(userController.getContactsByID);
 
     // Routing add contact
-    api.route('/add')
-        .post(userController.addContact);
+    api.route('/contact')
+        .post(userController.addContact)
+        .delete(userController.deleteContact);
+
+    // Conversation
+    api.route('/conversation')
+    .post(conversationController.createConversation);
 
     // Request for info
     // Set up the 'messages' routes

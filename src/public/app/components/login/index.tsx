@@ -1,14 +1,21 @@
 import axios from 'axios';
 import React from 'react';
+import { Redirect } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Action } from 'redux-actions';
 
 interface ILoginProps {
     fetchUser: (t1: Store.IUserPayload) => Action<Store.IUserPayload>;
 }
-class Login extends React.Component<ILoginProps> {
+interface ILoginState {
+    redirect: string;
+}
+class Login extends React.Component<ILoginProps, ILoginState> {
     constructor(props: ILoginProps) {
         super(props);
+        this.state = {
+            redirect: '',
+        };
     }
     public sendLogin = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -26,13 +33,16 @@ class Login extends React.Component<ILoginProps> {
                     throw data;
                 }
                 this.props.fetchUser({ user: data.user });
-                window.location.assign(data.redirect);
+                this.setState({ redirect: data.redirect });
             })
             .catch((error) => {
                 console.error(error);
             });
     }
     public render() {
+        if (this.state.redirect) {
+            return <Redirect to="/dashboard" />;
+        }
         return <div className="login">
             <form action="/login" method="POST" onSubmit={this.sendLogin}>
                 <label htmlFor="username">UserName:</label>

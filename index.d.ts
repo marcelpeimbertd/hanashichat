@@ -1,4 +1,5 @@
 declare namespace Base {
+import { type } from './src/server/models/user';
     export interface IUser {
         username: any;
         firstName: any;
@@ -11,19 +12,21 @@ declare namespace Base {
     }
 
     export interface IConversation {
-        messagesid: any;
+        messages: any;
         participants: any;
-        convesationType: any;
+        isPublic: any;
+        isGroup: any;
     }
 
     export type Versionable<T> = T & { current: any, previous: Array<any> };
 }
 
 declare namespace Model {
-    export interface IConversation {
-        messagesid: any;
-        participants: any[];
-        type: string;
+
+    export interface IMessages {
+        message: string;
+        userid: string;
+        date: Date;
     }
 }
 
@@ -69,15 +72,19 @@ declare namespace Store {
     }
 
     export interface IUsersState {
-        users: IUsers;
+        all: IUsers;
         user: IUser;
     }
 
-    interface IConversation {
+    export interface IConversation {
         id: string;
-        chat: string;
-        name: string;
-        emails: string;
-        messages: Store.IMessage[];
+        messages: IMessages;
+        participants: string[];
+        isPublic: boolean;
+        isGroup: boolean;
+    }
+
+    export interface IAppState {
+        users: IUsersState;
     }
 }

@@ -1,8 +1,7 @@
 import { NextFunction, Request, RequestHandler, Response } from 'express-serve-static-core';
-import { MongoError } from 'mongodb';
+import { MongoError, ObjectId } from 'mongodb';
 import User from '../models/user';
 import Controller from './abstractController';
-import { user } from './../../public/app/store/reducers';
 
 type MongooseError = MongoError & { errors: { [index: string]: { message: string } } }
 export default class UserController extends Controller {
@@ -214,7 +213,7 @@ export default class UserController extends Controller {
     public getContactsByID: RequestHandler = (req, res) => {
         if (req.user) {
             const user = req.user;
-            const queryContacts = user.contacts.map((id: string) => ({ id }));
+            const queryContacts = user.contacts.map((_id: ObjectId) => ({ _id }));
             User.find({ $or: queryContacts }, (err, contacts) => {
                 if (err) {
                     const ErrorMessage = {
@@ -253,8 +252,8 @@ export default class UserController extends Controller {
     public addContact: RequestHandler = (req, res) => {
         if (req.user) {
             const user = req.user;
-            const isRepeated = user.contacts.some((contactid: string) => {
-                return contactid === req.body.id;
+            const isRepeated = user.contacts.some((contactid: ObjectId) => {
+                return contactid.toString() === req.body.id;
             });
             if (isRepeated) {
                 const failureMessage = {
@@ -265,6 +264,53 @@ export default class UserController extends Controller {
                 return res.send(JSON.stringify(failureMessage));
             } else {
                 user.contacts.push(req.body.id);
+                user.save((err: MongooseError) => {
+                    // If an error occurs, use flash messages to report the error
+                    if (err) {
+                        // Use the error handling method to get the error message
+                        const message = this.getErrorMessage(err);
+                        // Set the flash messages
+                        req.flash('error', message);
+
+                        const failureMessage = {
+                            err,
+                            message,
+                            status: 0,
+                        };
+
+                        // Redirect the user back to the signup page
+                        return res.send(JSON.stringify(failureMessage));
+                    }
+                    const successMessage = {
+                        status: 1,
+                        user: this.getUserFields((user as Store.IUser)),
+                    };
+                    res.send(JSON.stringify(successMessage));
+                });
+            }
+        } else {
+            const notLoggedMessage = {
+                message: 'no user logged',
+                status: 0,
+            };
+            res.send(JSON.stringify(notLoggedMessage));
+        }
+    }
+    public deleteContact: RequestHandler = (req, res) => {
+        if (req.user) {
+            const user = req.user;
+            const isContact = user.contacts.findIndex((contactid: ObjectId) => {
+                return contactid.toString() === req.query.id;
+            });
+            if (!~isContact) {
+                const failureMessage = {
+                    message: 'contact doesn\'t exists',
+                    status: 0,
+                };
+                // Redirect the user back to the signup page
+                return res.send(JSON.stringify(failureMessage));
+            } else {
+                user.contacts.splice(isContact, 1);
                 user.save((err: MongooseError) => {
                     // If an error occurs, use flash messages to report the error
                     if (err) {

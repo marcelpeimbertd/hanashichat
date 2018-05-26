@@ -11,22 +11,22 @@ interface IDashBoardProps {
 }
 interface IDashBoardState {
     showUsers: boolean;
+    fetching: boolean;
     contacts: Store.IUsers;
 }
 class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
-    private contacts: never[] | JSX.Element = [];
     constructor(props: IDashBoardProps) {
         super(props);
         this.state = {
             contacts: [],
+            fetching: false,
             showUsers: false,
         };
     }
     public componentDidMount() {
-        this.fetchContacts(this.props.user.contacts);
-    }
-    public componentDidUpdate() {
-        this.fetchContacts(this.props.user.contacts);
+        if (this.props.user) {
+            this.fetchContacts(this.props.user.contacts);
+        }
     }
     public render() {
         return <div>
@@ -36,12 +36,24 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
         </div>;
     }
     private logout(event: any) {
-        console.log('logout works');
         event.preventDefault();
+        axios.get('/logout')
+            .then((response) => {
+                if (response.data.err) {
+                    throw response.data.err;
+                }
+                window.location.assign(response.data.redirect);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     }
     private getUsers = (event: ChangeEvent<HTMLInputElement>) => {
         const search = event.target;
         if (search.value.length > 3) {
+            this.setState({
+                fetching: true,
+            });
             axios.post('/users', { looking: search.value })
                 .then((response) => {
                     if (response.data.err) {
@@ -49,6 +61,7 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
                     }
                     this.props.fetchUsers(response.data);
                     this.setState({
+                        fetching: false,
                         showUsers: true,
                     });
                 })
@@ -57,47 +70,97 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
                 });
         } else {
             this.props.fetchUsers({ users: [] });
-            this.setState({
-                showUsers: false,
-            });
+            if (this.state.showUsers || this.state.fetching) {
+                this.setState({
+                    fetching: false,
+                    showUsers: false,
+                });
+            }
         }
     }
     private fetchContacts = (contacts: string[]) => {
-        if (contacts.length !== this.state.contacts.length) {
+        if (contacts.length !== this.state.contacts.length && contacts.length) {
+            this.setState({
+                fetching: true,
+            });
             axios.post('/contacts')
-            .then((response) => {
-                console.log(response.data);
-            })
-            .catch((err) => {
-                console.error(err);
+                .then((response) => {
+                    this.props.fetchUser(response.data);
+                    this.setState({
+                        contacts: response.data.contacts,
+                        fetching: false,
+                    });
+                })
+                .catch((err) => {
+                    console.error(err);
+                });
+        } else {
+            this.setState({
+                contacts: [],
             });
         }
     }
-    private addContact = (event: React.MouseEvent<HTMLUListElement>) => {
-        const li = event.target as HTMLLIElement;
-        if (li.tagName === 'LI') {
-            const data = { id: li.getAttribute('id') };
-            axios.post('/add', data)
-                .then((response) => {
-                    if (response.data.err) {
-                        throw response.data.err;
-                    }
-                    this.props.fetchUser(response.data);
-                    (document.getElementById('searchUser') as HTMLInputElement).setAttribute('textContent', '');
-                    this.setState({ showUsers: false });
-                })
-                .catch((error) => { console.error(error); });
+    private clickContact = (event: React.MouseEvent<HTMLUListElement>) => {
+        const li = (event.target as HTMLElement).parentNode as HTMLLIElement;
+        const target = (event.target as HTMLElement);
+        const id = li.getAttribute('id');
+        if (id && li.tagName === 'LI') {
+            if (li.className === 'add' && target.tagName === 'A') {
+                this.addContact(id);
+            }
+            if (target.className === 'delete') {
+                this.deleteContact(id);
+            }
         }
+        event.preventDefault();
+    }
+    private addContact = (id: string) => {
+        const data = { id };
+        axios.post('/contact', data)
+            .then((response) => {
+                if (response.data.err) {
+                    throw response.data.err;
+                }
+                this.props.fetchUser(response.data);
+                this.fetchContacts(response.data.user.contacts);
+                (document.getElementById('searchUser') as HTMLInputElement).setAttribute('textContent', '');
+                this.setState({ showUsers: false });
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
+    private deleteContact = (id: string) => {
+        const data = { id };
+        axios.delete('/contact', { params: data })
+            .then((response) => {
+                if (response.data.err) {
+                    throw response.data.err;
+                }
+                this.props.fetchUser(response.data);
+                this.fetchContacts(response.data.user.contacts);
+                (document.getElementById('searchUser') as HTMLInputElement).setAttribute('textContent', '');
+                this.setState({ showUsers: false });
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     }
     private showUsers(showUsers: boolean) {
         if (showUsers === true) {
             return this.defineList(
                 this.props.users,
-                { className: 'users', onClick: this.addContact },
+                { className: 'users', onClick: this.clickContact },
+                { className: 'add' },
             );
         }
         return <div>
             <h1>Contacts</h1>
+            {this.defineList(this.state.contacts,
+                { className: 'contacts', onClick: this.clickContact },
+                undefined,
+                <span className="delete">X</span>,
+            )}
             <h1>Chats</h1>
         </div>;
     }
@@ -106,15 +169,19 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
         ulProps?: React.DetailedHTMLProps<
             React.HTMLAttributes<HTMLUListElement>, HTMLUListElement>,
         liProps?: React.DetailedHTMLProps<
-            React.LiHTMLAttributes<HTMLLIElement>, HTMLLIElement>) {
+            React.LiHTMLAttributes<HTMLLIElement>, HTMLLIElement>,
+        ...extraElements: any[]) {
         if (!list) {
             return [];
         }
         return <ul {...ulProps}>
             {list.map((value) => {
-                liProps = liProps ? liProps : {};
-                liProps.id = value.id;
-                return <li {...liProps}>{value.firstName + ' ' + value.lastName}</li>;
+                return <li {...liProps} id={value.id} key={value.id}>
+                    <Link to={`/dashboard/${value.username}`}>
+                        {value.firstName + ' ' + value.lastName}
+                    </Link>
+                    {extraElements}
+                </li>;
             })}
         </ul>;
     }

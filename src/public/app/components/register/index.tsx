@@ -1,11 +1,20 @@
 import axios from 'axios';
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 
-interface ILoginProps {
+interface IRegisterProps {
     prop: string;
 }
-class Register extends React.Component<ILoginProps> {
+interface IRegisterState {
+    redirect: string;
+}
+class Register extends React.Component<IRegisterProps, IRegisterState> {
+    constructor(props: IRegisterProps) {
+        super(props);
+        this.state = {
+            redirect: '',
+        };
+    }
     public sendRegister(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         const info: { [key: string]: string } = {
@@ -24,13 +33,16 @@ class Register extends React.Component<ILoginProps> {
                 if (data.err) {
                     throw data;
                 }
-                window.location.assign(data.redirect);
+                this.setState({ redirect: data.redirect });
             })
             .catch((error) => {
                 console.log(error);
             });
     }
     public render() {
+        if (this.state.redirect) {
+            return <Redirect to="/dashboard" />;
+        }
         return <div>
             <form onSubmit={this.sendRegister}>
                 <label htmlFor="username">UserName:</label>

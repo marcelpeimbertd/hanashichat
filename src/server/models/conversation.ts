@@ -1,12 +1,13 @@
-import { Document, model, Model, Schema, SchemaDefinition } from 'mongoose';
-const { ObjectId, String, Number } = Schema.Types;
 import crypto from 'crypto';
+import { Document, model, Model, Schema, SchemaDefinition } from 'mongoose';
+import { messagesSchema } from './messages';
 
-type ConversationType = Base.IConversation & { messagesid: any };
+type ConversationType = Base.IConversation & { messages: any };
 export const conversationSchema: ConversationType = {
-    convesationType: String,
-    messagesid: {type: Schema.Types.ObjectId, ref: 'Messages'},
-    participants: [{type: Schema.Types.ObjectId, ref: 'User'}],
+    isGroup: Boolean,
+    isPublic: Boolean,
+    messages: messagesSchema,
+    participants: [{ type: Schema.Types.ObjectId, ref: 'User', require: true }],
 };
 const ConversationSchema = new Schema(
     (conversationSchema as ConversationType),

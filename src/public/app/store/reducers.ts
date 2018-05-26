@@ -1,4 +1,3 @@
-import Redux from 'redux';
 import { createAction, handleAction, handleActions } from 'redux-actions';
 
 // Messages
@@ -25,8 +24,8 @@ const initialStateUser: Store.IUser = {
 };
 
 export const initialStateUsers: Store.IUsersState = {
+    all: [],
     user: initialStateUser,
-    users: [],
 };
 
 export const fetchUsersActionCreator = createAction<Store.IUsersPayload>(FETCH_USERS);
@@ -35,10 +34,10 @@ export const fetchUserActionCreator = createAction<Store.IUserPayload>(FETCH_USE
 
 type UsersPayload = Store.IUsersPayload & Store.IUserPayload;
 
-export const users = handleActions<Store.IUsersState, UsersPayload>({
+export const reducers = handleActions<Store.IUsersState, UsersPayload>({
     [FETCH_USERS]: (state, { payload = { users: [] } }) => ({
         ...state,
-        users: payload.users,
+        all: payload.users,
     }),
     [FETCH_USER]: (state, { payload = { user: initialStateUser } }) => ({
         ...state,

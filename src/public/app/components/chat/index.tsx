@@ -1,6 +1,8 @@
 import axios from 'axios';
 import moment from 'moment';
 import React from 'react';
+import { RouteProps } from 'react-router';
+import { Action } from 'redux-actions';
 import io from 'socket.io-client';
 
 interface IMessage {
@@ -17,12 +19,15 @@ interface IConversation {
     emails: string;
     messages: IMessage[];
 }
-interface IChatProps {
+interface IChatProps extends RouteProps{
+    user: Store.IUser;
     messages?: IMessage[];
     conversation?: string;
-    // getMessages(messages: IMessage[]): void;
+    fetchMessages: (t1: Store.IMessages) => Action<Store.IMessagesPayload>;
     // sendMessage?(message: IMessage): void;
 }
+
+type EspecialEvent = React.KeyboardEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement>;
 class Chat extends React.Component<IChatProps> {
     constructor(props: IChatProps) {
         super(props);
@@ -41,14 +46,10 @@ class Chat extends React.Component<IChatProps> {
             <p className="message default">Say Hello</p>;
     }
     public getMessages() {
-        const socket = io();
-        socket.emit('get messages');
-        // this.props.getMessages();
+        console.log('hi');
     }
-    public sendMessage(event: React.KeyboardEvent<HTMLInputElement>) {
-        if (event.key === 'Enter') {
-            const socket = io();
-            socket.emit('chat message', event.currentTarget.value);
+    public sendMessage(event: EspecialEvent) {
+        if ((event as React.KeyboardEvent<HTMLInputElement>).key === 'Enter') {
             if (this.props.sendMessage) {
                 // this.props.sendMessage({ message: event.currentTarget.value });
             }

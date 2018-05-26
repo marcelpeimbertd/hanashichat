@@ -2,19 +2,21 @@ import { Document, model, Model, Schema, SchemaDefinition } from 'mongoose';
 const { ObjectId, Number, String } = Schema.Types;
 
 type MessagesType = Base.Versionable<{}>;
-const messagesSchema: MessagesType = {
+export const messagesSchema: MessagesType = {
     current: new Schema({
-        feedback: String,
-        status: Number,
+        date: Date,
+        message: String,
+        userid: String,
     }),
     previous: [{
-        feedback: String,
-        status: Number,
+        date: Date,
+        message: String,
+        userid: Number,
     }],
 };
 const MessagesSchema = new Schema(
     (messagesSchema as MessagesType),
-    {timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } });
+    {_id: false, timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } });
 
 export type MessagesDocumentType = Versionable<Model.IMessages> & Document;
 interface IMessagesSchemaMethods { }

@@ -8,7 +8,6 @@
     },
     "exclude": [
       "./src/public/",
-      "./src/public/store/redicers.ts",
       "./__tests__/"
     ]
 }
