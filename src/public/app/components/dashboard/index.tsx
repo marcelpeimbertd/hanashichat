@@ -3,6 +3,11 @@ import React, { ChangeEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { Action } from 'redux-actions';
 
+interface IDATA {
+    id?: string | null;
+    conversation?: Store.IConversation;
+}
+
 interface IDashBoardProps {
     user: Store.IUser;
     users: Store.IUsers;
@@ -13,19 +18,21 @@ interface IDashBoardState {
     showUsers: boolean;
     fetching: boolean;
     contacts: Store.IUsers;
+    conversations: Store.IConversation[];
 }
 class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
     constructor(props: IDashBoardProps) {
         super(props);
         this.state = {
             contacts: [],
-            fetching: false,
+            conversations: [],
+            fetching: [],
             showUsers: false,
         };
     }
     public componentDidMount() {
         if (this.props.user) {
-            this.fetchContacts(this.props.user.contacts);
+            this.fetch();
         }
     }
     public render() {
@@ -78,6 +85,9 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
             }
         }
     }
+    private fetch = () => {
+        this.fetchContacts(this.props.user.contacts);
+    }
     private fetchContacts = (contacts: string[]) => {
         if (contacts.length !== this.state.contacts.length && contacts.length) {
             this.setState({
@@ -100,13 +110,45 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
             });
         }
     }
+    private fetchConversations = (conversations: string[]) => {
+        if (conversations.length !== this.state.conversations.length && conversations.length) {
+            this.setState({
+                fetching: true,
+            });
+            axios.post('/conversations')
+                .then((response) => {
+                    this.props.fetchUser(response.data);
+                    this.setState({
+                        conversations: response.data.conversations,
+                        fetching: false,
+                    });
+                })
+                .catch((err) => {
+                    console.error(err);
+                });
+        } else {
+            this.setState({
+                conversations: [],
+            });
+        }
+    }
     private clickContact = (event: React.MouseEvent<HTMLUListElement>) => {
         const li = (event.target as HTMLElement).parentNode as HTMLLIElement;
         const target = (event.target as HTMLElement);
         const id = li.getAttribute('id');
         if (id && li.tagName === 'LI') {
+            const data: IDATA = {
+                conversation: {
+                    id: '',
+                    isGroup: false,
+                    isPublic: false,
+                    messages: [],
+                    participants: [id, this.props.user.id],
+                },
+                id,
+            };
             if (li.className === 'add' && target.tagName === 'A') {
-                this.addContact(id);
+                this.createConversation(data);
             }
             if (target.className === 'delete') {
                 this.deleteContact(id);
@@ -114,8 +156,20 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
         }
         event.preventDefault();
     }
-    private addContact = (id: string) => {
-        const data = { id };
+    private createConversation = (data: IDATA) => {
+        axios.post('/conversation', data)
+            .then((response) => {
+                if (response.data.err) {
+                    throw response.data.err;
+                }
+                data.conversation = response.data.conversation;
+                this.addContact(data);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
+    private addContact = (data: IDATA) => {
         axios.post('/contact', data)
             .then((response) => {
                 if (response.data.err) {

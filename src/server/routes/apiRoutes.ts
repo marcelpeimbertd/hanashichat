@@ -35,9 +35,13 @@ export default function setAPIRoutes(app: Express, passport: PassportStatic/* , 
     api.route('/users')
         .post(userController.getUsersByUsernameOrEmail);
 
-    // Routing for users
+    // Routing for Contacts
     api.route('/contacts')
         .post(userController.getContactsByID);
+
+    // Routing for Conversations
+    api.route('/conversations')
+        .post(conversationController.getConversationsByID);
 
     // Routing add contact
     api.route('/contact')
@@ -46,7 +50,7 @@ export default function setAPIRoutes(app: Express, passport: PassportStatic/* , 
 
     // Conversation
     api.route('/conversation')
-    .post(conversationController.createConversation);
+        .post(conversationController.createConversation, userController.addConversation);
 
     // Request for info
     // Set up the 'messages' routes

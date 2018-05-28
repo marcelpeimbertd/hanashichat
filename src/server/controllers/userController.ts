@@ -146,31 +146,6 @@ export default class UserController extends Controller {
             res.send(req.user.role.toString());
         }
     }
-    // Create a new controller method for send users
-    public sendUsers: RequestHandler = (req, res) => {
-        if (req.user) {
-            User.find()
-                .then((Users) => {
-                    const users = Users.map((user) => {
-                        const { firstName, lastName } = user;
-                        return { firstName, lastName };
-                    });
-                    res.send(users);
-                })
-                .catch((err) => {
-                    // If an error occurs, use flash messages to report the error
-                    if (err) {
-                        // Use the error handling method to get the error message
-                        const message = this.getErrorMessage(err);
-                        // Set the flash messages
-                        req.flash('error', message);
-
-                        // Redirect the user back to the signup page
-                        return res.send('Error');
-                    }
-                });
-        }
-    }
     // Create a new controller methid for get users by username o email
     public getUsersByUsernameOrEmail: RequestHandler = (req, res) => {
         if (req.body.looking) {
@@ -240,6 +215,54 @@ export default class UserController extends Controller {
                     res.send(JSON.stringify(notContactsMessage));
                 }
             });
+        } else {
+            const notLoggedMessage = {
+                message: 'no user logged',
+                status: 0,
+            };
+            res.send(JSON.stringify(notLoggedMessage));
+        }
+    }
+    // adding new conversations
+    public addConversation: RequestHandler = (req, res) => {
+        if (req.user) {
+            const user = req.user;
+            const isRepeated = user.conversations.some((conversationid: ObjectId) => {
+                return conversationid.toString() === req.body.id;
+            });
+            if (isRepeated) {
+                const failureMessage = {
+                    message: 'conversation already exists',
+                    status: 0,
+                };
+                // Redirect the user back to the signup page
+                return res.send(JSON.stringify(failureMessage));
+            } else {
+                user.conversations.push(req.body.id);
+                user.save((err: MongooseError) => {
+                    // If an error occurs, use flash messages to report the error
+                    if (err) {
+                        // Use the error handling method to get the error message
+                        const message = this.getErrorMessage(err);
+                        // Set the flash messages
+                        req.flash('error', message);
+
+                        const failureMessage = {
+                            err,
+                            message,
+                            status: 0,
+                        };
+
+                        // Redirect the user back to the signup page
+                        return res.send(JSON.stringify(failureMessage));
+                    }
+                    const successMessage = {
+                        status: 1,
+                        user: this.getUserFields((user as Store.IUser)),
+                    };
+                    res.send(JSON.stringify(successMessage));
+                });
+            }
         } else {
             const notLoggedMessage = {
                 message: 'no user logged',
