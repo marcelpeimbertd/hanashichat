@@ -14,7 +14,8 @@
         ["module-resolver", {
             "extensions": [".js", ".jsx", ".ts", ".tsx"],
             "root": ["./src"]
-        }]
+        }],
+        "transform-async-to-generator"
     ]
 
 }

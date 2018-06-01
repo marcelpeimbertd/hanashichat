@@ -9,26 +9,43 @@ export default class ConversationController extends Controller {
 
     public createConversation: RequestHandler = (req, res, next) => {
         if (req.user) {
-            const conversation = new Conversation(req.body.conversation);
-            conversation.save((err: MongooseError) => {
-                // If an error occurs, use flash messages to report the error
-                if (err) {
-                    const message = 'conversation not saved';
-                    const failureMessage = {
-                        err,
-                        message,
-                        status: 0,
-                    };
+            Conversation.find({
+                participants: {
+                    $all: req.body.conversation.participants,
+                },
+            }, (err: MongooseError, conversations) => {
+                if (conversations.length) {
+                    const conversation = conversations.find((conv) =>
+                        conv.participants.every((participantID: ObjectId) =>
+                            req.body.conversation.participants.some((
+                                same: string) => participantID.toString() === same)));
+                    req.body.conversation = conversation;
+                    req.body.id = conversation.id;
+                    return next();
+                } else {
+                    const conversation = new Conversation(req.body.conversation);
+                    conversation.save((err: MongooseError) => {
+                        // If an error occurs, use flash messages to report the error
+                        if (err) {
+                            const message = 'conversation not saved';
+                            const failureMessage = {
+                                err,
+                                message,
+                                status: 0,
+                            };
 
-                    // Redirect the user back to the signup page
-                    return res.send(JSON.stringify(failureMessage));
+                            // Redirect the user back to the signup page
+                            return res.send(JSON.stringify(failureMessage));
+                        }
+                        const successMessage = {
+                            conversation,
+                            status: 1,
+                        };
+                        req.body.conversation = conversation;
+                        req.body.id = conversation.id;
+                        next();
+                    });
                 }
-                const successMessage = {
-                    conversation,
-                    status: 1,
-                };
-                req.body.id = conversation.id;
-                next();
             });
         } else {
             const notLoggedMessage = {
@@ -76,7 +93,46 @@ export default class ConversationController extends Controller {
             res.send(JSON.stringify(notLoggedMessage));
         }
     }
-    // Get the user fields
+    // Update Messages
+    public updateMessage: RequestHandler = (req, res) => {
+        const current = req.body.newMessage;
+        const newPrevious = req.body.current;
+        Conversation.findById(req.body.conversationID, (err, conversation) => {
+            if (err) {
+                const ErrorMessage = {
+                    err,
+                    message: 'Conversations Not match',
+                    status: 0,
+                };
+                return res.send(JSON.stringify(ErrorMessage));
+            }
+            if (conversation) {
+                conversation.messages.current = current;
+                if (newPrevious) {
+                    conversation.messages.previous.push(newPrevious);
+                }
+                conversation.save((err: MongoError) => {
+                    if (err) {
+                        const ErrorMessage = {
+                            err,
+                            message: 'Conversations Not match',
+                            status: 0,
+                        };
+                        return res.send(JSON.stringify(ErrorMessage));
+                    }
+                    const results = this.getConversationFields((conversation as Store.IConversation));
+                    const successMessage = {
+                        conversation: results,
+                        status: 1,
+                    };
+                    return res.send(JSON.stringify(successMessage));
+                });
+
+            }
+        });
+    }
+
+    // Get the conversation fields
     private getConversationFields({ id, messages, participants }: Store.IConversation) {
         return {
             id, messages, participants,

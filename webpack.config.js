@@ -48,6 +48,25 @@ const clientConfig = {
             {
                 test: /\.tsx?$/,
                 loader: 'babel-loader'
+            },
+            {
+                test: /\.css$/,
+                use: [{
+                    loader: 'style-loader'
+                },
+                {
+                    loader: 'css-loader',
+                    options: {
+                        url: false,
+                    }
+                }],
+            },
+            {
+                test: /\.(:?(:?jpg)|(:?png))$/,
+                loader: 'url-loader',
+                options: {
+                    limit: 8192
+                }
             }
         ]
     },

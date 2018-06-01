@@ -8,9 +8,12 @@ export default (
     <BrowserRouter>
         <Route render={(props) => (
             <ConnectedApp {...props}>
-                <Route exact path="/" render={(props) =>
-                    <ConnectedLogin {...props} />} />
-                <Route path="/login" render={(props) => <ConnectedLogin {...props} />} />
+                <Route exact path="/" render={(props) => (
+                    [<div className="top"><div className="leafIcon"></div></div>,
+                    <ConnectedLogin {...props} />])} />
+                <Route path="/login" render={(props) => (
+                    [<div><div className="leafIcon"></div></div>,
+                    <ConnectedLogin {...props} />])} />
                 <Route path="/dashboard/:username?" render={() => <div>
                     <ConnectedDashBoard />
                     <Route path="/dashboard/:username" render={() =>

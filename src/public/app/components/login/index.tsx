@@ -3,6 +3,7 @@ import React from 'react';
 import { Redirect } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Action } from 'redux-actions';
+import './login';
 
 interface ILoginProps {
     fetchUser: (t1: Store.IUserPayload) => Action<Store.IUserPayload>;
@@ -44,14 +45,18 @@ class Login extends React.Component<ILoginProps, ILoginState> {
             return <Redirect to="/dashboard" />;
         }
         return <div className="login">
-            <form action="/login" method="POST" onSubmit={this.sendLogin}>
-                <label htmlFor="username">UserName:</label>
-                <input type="username" name="username" id="username" placeholder="Enter your user name" />
-                <label htmlFor="password">Password:</label>
-                <input type="password" name="password" id="password" placeholder="Enter Password" />
-                <input type="submit" value="LogIn" />
+            <form className="loginForm" action="/login" method="POST" onSubmit={this.sendLogin}>
+                <input type="username" className="field"
+                    name="username" id="username" placeholder="Enter your user name" />
+                <label htmlFor="username" className="field label">UserName</label>
+                <input type="password" className="field"
+                    name="password" id="password" placeholder="Enter Password" />
+                <label htmlFor="password" className="field label">Password</label>
+                <div className="field">
+                <div><input type="submit" value="LogIn" className="btn-submit" /></div>
+                    <div><Link to="/register" className="btn-link">Register</Link></div>
+                </div>
             </form>
-            <Link to="/register">Register</Link>
         </div>;
     }
 }

@@ -1,6 +1,6 @@
 import { combineReducers, createStore } from 'redux';
-import { reducers as users} from './reducers';
+import { reducerConversation as conversation, reducersUsers as users} from './reducers';
 
-const storeReducer = combineReducers<{}>({ users });
+const storeReducer = combineReducers<{}>({ users, conversation });
 
 export const store = createStore(storeReducer);

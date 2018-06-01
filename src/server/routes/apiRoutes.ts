@@ -54,10 +54,8 @@ export default function setAPIRoutes(app: Express, passport: PassportStatic/* , 
 
     // Request for info
     // Set up the 'messages' routes
-    app.use('/messages', (req, res, next) => {
-        const messages = require('../../db/seed/messages.json');
-        res.json(messages);
-    });
+    api.route('/message')
+        .post(conversationController.updateMessage);
 
     // Apply the routes to our application with the prefix /api
     app.use('/', api);

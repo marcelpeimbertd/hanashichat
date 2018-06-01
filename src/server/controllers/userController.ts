@@ -232,36 +232,42 @@ export default class UserController extends Controller {
             });
             if (isRepeated) {
                 const failureMessage = {
+                    conversation: this.getConversationFields(req.body.conversation),
                     message: 'conversation already exists',
-                    status: 0,
+                    status: 1,
                 };
                 // Redirect the user back to the signup page
                 return res.send(JSON.stringify(failureMessage));
             } else {
-                user.conversations.push(req.body.id);
-                user.save((err: MongooseError) => {
-                    // If an error occurs, use flash messages to report the error
-                    if (err) {
-                        // Use the error handling method to get the error message
-                        const message = this.getErrorMessage(err);
-                        // Set the flash messages
-                        req.flash('error', message);
+                // user.conversations.push(req.body.id);
+                const query = req.body.conversation.participants.map((_id: ObjectId) => ({ _id }));
+                User.updateMany({ $or: query },
+                    { $push: { conversations: req.body.id } },
+                    (err: MongooseError, raw) => {
+                        // If an error occurs, use flash messages to report the error
+                        if (err) {
+                            // Use the error handling method to get the error message
+                            const message = this.getErrorMessage(err);
+                            // Set the flash messages
+                            req.flash('error', message);
 
-                        const failureMessage = {
-                            err,
-                            message,
-                            status: 0,
+                            const failureMessage = {
+                                err,
+                                message,
+                                status: 0,
+                            };
+
+                            // Redirect the user back to the signup page
+                            return res.send(JSON.stringify(failureMessage));
+                        }
+                        user.conversations.push(req.body.id);
+                        const successMessage = {
+                            conversation: this.getConversationFields(req.body.conversation),
+                            status: 1,
+                            user: this.getUserFields((user as Store.IUser)),
                         };
-
-                        // Redirect the user back to the signup page
-                        return res.send(JSON.stringify(failureMessage));
-                    }
-                    const successMessage = {
-                        status: 1,
-                        user: this.getUserFields((user as Store.IUser)),
-                    };
-                    res.send(JSON.stringify(successMessage));
-                });
+                        res.send(JSON.stringify(successMessage));
+                    });
             }
         } else {
             const notLoggedMessage = {
@@ -375,6 +381,12 @@ export default class UserController extends Controller {
         return {
             contacts, conversations, email,
             firstName, id, lastName, username,
+        };
+    }
+    // Get the conversation fields
+    private getConversationFields({ id, messages, participants }: Store.IConversation) {
+        return {
+            id, messages, participants,
         };
     }
 }

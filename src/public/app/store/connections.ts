@@ -5,9 +5,12 @@ import DashBoard from '../components/dashboard';
 import Login from '../components/login';
 import * as reducers from './reducers';
 
-export const ConnectedChat = connect(undefined,
+export const ConnectedChat = connect((state: Store.IAppState) => ({
+    conversation: state.conversation.current,
+    user: state.users.user,
+}),
     {
-        fetchMessages: reducers.fetchMessagesActionCreator,
+        fetchConversation: reducers.fetchConversationActionCreator,
     })(Chat);
 
 export const ConnectedApp = connect((state: Store.IAppState) => ({
@@ -27,6 +30,7 @@ export const ConnectedDashBoard = connect((state: Store.IAppState) => ({
     users: state.users.all,
 }),
     {
+        fetchConversation: reducers.fetchConversationActionCreator,
         fetchUser: reducers.fetchUserActionCreator,
         fetchUsers: reducers.fetchUsersActionCreator,
     })(DashBoard);

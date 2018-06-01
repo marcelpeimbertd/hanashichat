@@ -1,14 +1,32 @@
 import { createAction, handleAction, handleActions } from 'redux-actions';
 
-// Messages
-const FETCH_MESSAGES = 'FETCH_MESSAGES';
-const initialStateMessages: Store.IMessagesState = { messages: [] };
+// Conversation
+const FETCH_CONVERSATION = 'FETCH_CONVERSATION';
+const initialStateConversation: { current: Store.IConversation } = {
+    current: {
+        id: '',
+        messages: {
+            current: {
+                date: new Date(),
+                message: '',
+                userid: '',
+            },
+            previous: [],
+        },
+        name: '',
+        participants: [],
+    },
+};
 
-export const fetchMessagesActionCreator = createAction<Store.IMessagesPayload>(FETCH_MESSAGES);
+export const fetchConversationActionCreator = createAction<Store.IConversationPayload>(FETCH_CONVERSATION);
 
-export const reducerMessages = handleAction<{ messages: Store.IMessages } | undefined, Store.IMessagesPayload>(
-    FETCH_MESSAGES,
-    (state, { payload = { messages: [] } }) => ({ ...state, messages: payload.messages }), initialStateMessages);
+export const reducerConversation =
+    handleActions<{ current: Store.IConversation }, Store.IConversationPayload>({
+        [FETCH_CONVERSATION]: (state, { payload = { conversation: initialStateConversation.current } }) => ({
+            ...state,
+            current: payload.conversation,
+        }),
+    }, initialStateConversation);
 
 // Users
 const FETCH_USERS = 'users/FETCH_USERS';
@@ -34,7 +52,7 @@ export const fetchUserActionCreator = createAction<Store.IUserPayload>(FETCH_USE
 
 type UsersPayload = Store.IUsersPayload & Store.IUserPayload;
 
-export const reducers = handleActions<Store.IUsersState, UsersPayload>({
+export const reducersUsers = handleActions<Store.IUsersState, UsersPayload>({
     [FETCH_USERS]: (state, { payload = { users: [] } }) => ({
         ...state,
         all: payload.users,

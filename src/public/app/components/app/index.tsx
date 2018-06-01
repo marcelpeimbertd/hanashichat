@@ -3,6 +3,7 @@ import React from 'react';
 import { RouteProps } from 'react-router';
 import { Link, Redirect } from 'react-router-dom';
 import { Action } from 'redux-actions';
+import './app';
 import { IAppProps } from './index';
 
 export interface IAppProps extends RouteProps {
@@ -72,7 +73,9 @@ class App extends React.Component<IAppProps, IAppState> {
         if (!this.state.isLogged && path !== '/login' && path !== '/register') {
             return <Redirect to="/login" />;
         }
-        return this.props.children;
+        return <div className="app">
+            {this.props.children}
+        </div>;
     }
 }
 export default App;

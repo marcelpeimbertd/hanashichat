@@ -5,18 +5,25 @@ import { Action } from 'redux-actions';
 
 interface IDATA {
     id?: string | null;
-    conversation?: Store.IConversation;
+    conversation?: Base.IConversation;
+}
+
+interface IFetching {
+    command: string;
+    args: any[];
 }
 
 interface IDashBoardProps {
     user: Store.IUser;
     users: Store.IUsers;
+    fetchConversation: (t1: Store.IConversationPayload) => Action<Store.IConversationPayload>;
     fetchUser: (t1: Store.IUserPayload) => Action<Store.IUserPayload>;
     fetchUsers: (t1: Store.IUsersPayload) => Action<Store.IUsersPayload>;
 }
 interface IDashBoardState {
     showUsers: boolean;
-    fetching: boolean;
+    fetching: IFetching[];
+    option: boolean;
     contacts: Store.IUsers;
     conversations: Store.IConversation[];
 }
@@ -27,13 +34,27 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
             contacts: [],
             conversations: [],
             fetching: [],
+            option: false,
             showUsers: false,
         };
     }
     public componentDidMount() {
         if (this.props.user) {
-            this.fetch();
+            const fetchContacts: IFetching = {
+                args: [this.props.user.contacts],
+                command: 'contacts',
+            };
+            const fetchConversations: IFetching = {
+                args: [this.props.user.conversations],
+                command: 'conversations',
+            };
+            this.setState({
+                fetching: [fetchConversations, fetchContacts],
+            });
         }
+    }
+    public componentDidUpdate() {
+        this.fetch(Array.from(this.state.fetching));
     }
     public render() {
         return <div>
@@ -58,9 +79,6 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
     private getUsers = (event: ChangeEvent<HTMLInputElement>) => {
         const search = event.target;
         if (search.value.length > 3) {
-            this.setState({
-                fetching: true,
-            });
             axios.post('/users', { looking: search.value })
                 .then((response) => {
                     if (response.data.err) {
@@ -68,7 +86,6 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
                     }
                     this.props.fetchUsers(response.data);
                     this.setState({
-                        fetching: false,
                         showUsers: true,
                     });
                 })
@@ -79,26 +96,49 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
             this.props.fetchUsers({ users: [] });
             if (this.state.showUsers || this.state.fetching) {
                 this.setState({
-                    fetching: false,
                     showUsers: false,
                 });
             }
         }
     }
-    private fetch = () => {
-        this.fetchContacts(this.props.user.contacts);
+    private fetch = (fetcherArray: IFetching[]) => {
+        const fetchFns: { [key: string]: Function } = {
+            contacts: this.fetchContacts,
+            conversations: this.fetchConversations,
+        };
+        if (fetcherArray.length) {
+            const { command, args } = fetcherArray[0];
+            fetcherArray[0] = {
+                args: [],
+                command: 'wait',
+            };
+            if (command !== 'wait') {
+                this.setState({
+                    fetching: fetcherArray,
+                });
+                fetchFns[command].apply(this, args);
+            }
+        }
+    }
+    private fetchConversation = (id: string) => {
+        const conversation = this.state.conversations.find(((conv) => {
+            const isConvId = conv.id === id;
+            const isContactID = conv.participants.every(
+                (participantID) => participantID === id || participantID === this.props.user.id);
+            return isConvId || isContactID;
+        }));
+        if (conversation) {
+            this.props.fetchConversation({ conversation });
+        }
     }
     private fetchContacts = (contacts: string[]) => {
         if (contacts.length !== this.state.contacts.length && contacts.length) {
-            this.setState({
-                fetching: true,
-            });
             axios.post('/contacts')
                 .then((response) => {
                     this.props.fetchUser(response.data);
                     this.setState({
                         contacts: response.data.contacts,
-                        fetching: false,
+                        fetching: this.state.fetching.slice(1),
                     });
                 })
                 .catch((err) => {
@@ -107,20 +147,17 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
         } else {
             this.setState({
                 contacts: [],
+                fetching: this.state.fetching.slice(1),
             });
         }
     }
     private fetchConversations = (conversations: string[]) => {
         if (conversations.length !== this.state.conversations.length && conversations.length) {
-            this.setState({
-                fetching: true,
-            });
             axios.post('/conversations')
                 .then((response) => {
-                    this.props.fetchUser(response.data);
                     this.setState({
                         conversations: response.data.conversations,
-                        fetching: false,
+                        fetching: this.state.fetching.slice(1),
                     });
                 })
                 .catch((err) => {
@@ -129,6 +166,7 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
         } else {
             this.setState({
                 conversations: [],
+                fetching: this.state.fetching.slice(1),
             });
         }
     }
@@ -139,10 +177,12 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
         if (id && li.tagName === 'LI') {
             const data: IDATA = {
                 conversation: {
-                    id: '',
                     isGroup: false,
                     isPublic: false,
-                    messages: [],
+                    messages: {
+                        previous: [],
+                    },
+                    name: '',
                     participants: [id, this.props.user.id],
                 },
                 id,
@@ -152,6 +192,9 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
             }
             if (target.className === 'delete') {
                 this.deleteContact(id);
+            }
+            if (li.className === 'conversation' || li.className === 'contact' && target.tagName === 'A') {
+                this.fetchConversation(id);
             }
         }
         event.preventDefault();
@@ -163,6 +206,7 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
                     throw response.data.err;
                 }
                 data.conversation = response.data.conversation;
+                this.props.fetchConversation(response.data);
                 this.addContact(data);
             })
             .catch((error) => {
@@ -176,9 +220,14 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
                     throw response.data.err;
                 }
                 this.props.fetchUser(response.data);
-                this.fetchContacts(response.data.user.contacts);
                 (document.getElementById('searchUser') as HTMLInputElement).setAttribute('textContent', '');
-                this.setState({ showUsers: false });
+                this.setState({
+                    fetching: this.state.fetching.concat({
+                        args: response.data.user.contacts,
+                        command: 'contacts',
+                    }),
+                    showUsers: false,
+                });
             })
             .catch((error) => {
                 console.error(error);
@@ -204,6 +253,7 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
         if (showUsers === true) {
             return this.defineList(
                 this.props.users,
+                'contact',
                 { className: 'users', onClick: this.clickContact },
                 { className: 'add' },
             );
@@ -211,15 +261,22 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
         return <div>
             <h1>Contacts</h1>
             {this.defineList(this.state.contacts,
+                'contact',
                 { className: 'contacts', onClick: this.clickContact },
-                undefined,
+                { className: 'contact' },
                 <span className="delete">X</span>,
             )}
             <h1>Chats</h1>
+            {this.defineList(this.state.conversations,
+                'conversation',
+                { className: 'conversations', onClick: this.clickContact },
+                { className: 'conversation' },
+            )}
         </div>;
     }
     private defineList(
         list: any[],
+        type: string,
         ulProps?: React.DetailedHTMLProps<
             React.HTMLAttributes<HTMLUListElement>, HTMLUListElement>,
         liProps?: React.DetailedHTMLProps<
@@ -228,14 +285,50 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
         if (!list) {
             return [];
         }
+        if (type === 'contact') {
+            return <ul {...ulProps}>
+                {list.map((value) => {
+                    return <li {...liProps} id={value.id} key={value.id}>
+                        <Link to={'/dashboard/' + value.username}>
+                            {value.firstName + ' ' + value.lastName}
+                        </Link>
+                        {extraElements}
+                    </li>;
+                })}
+            </ul>;
+        }
         return <ul {...ulProps}>
-            {list.map((value) => {
-                return <li {...liProps} id={value.id} key={value.id}>
-                    <Link to={`/dashboard/${value.username}`}>
-                        {value.firstName + ' ' + value.lastName}
-                    </Link>
-                    {extraElements}
-                </li>;
+            {list.map((value: Store.IConversation) => {
+                if (value.messages.current) {
+                    const participantID = value.participants.filter((participant) => {
+                        return participant !== this.props.user.id;
+                    })[0];
+                    let convParticipant: Store.IUser | undefined;
+                    if (!participantID) {
+                        const isMe = value.participants.every((participant) => {
+                            return participant === this.props.user.id;
+                        });
+                        convParticipant = isMe ? this.props.user : undefined;
+                    } else {
+                        convParticipant = this.state.contacts.find((contact) => {
+                            return contact.id === participantID;
+                        });
+                    }
+                    value.name = value.name ?
+                        value.name :
+                        convParticipant ?
+                            convParticipant.firstName + ' ' + convParticipant.lastName :
+                            value.id;
+                    return <li {...liProps} id={value.id} key={value.id}>
+                        <Link to={`/dashboard/${value.id}`}>
+                            {value.name} <br />
+                            <div>{value.messages.current.message}</div>
+                        </Link>
+                        {extraElements}
+                    </li>;
+                } else {
+                    return undefined;
+                }
             })}
         </ul>;
     }
