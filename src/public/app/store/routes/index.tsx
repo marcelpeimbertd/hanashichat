@@ -9,10 +9,16 @@ export default (
         <Route render={(props) => (
             <ConnectedApp {...props}>
                 <Route exact path="/" render={(props) => (
-                    [<div className="top"><div className="leafIcon"></div></div>,
+                    [<div className="top">
+                        <div className="leafIcon"></div>
+                        <h1 className="title">HanashiChat</h1>
+                    </div>,
                     <ConnectedLogin {...props} />])} />
                 <Route path="/login" render={(props) => (
-                    [<div><div className="leafIcon"></div></div>,
+                    [<div className="top">
+                        <div className="leafIcon"></div>
+                        <h1 className="title">HanashiChat</h1>
+                    </div>,
                     <ConnectedLogin {...props} />])} />
                 <Route path="/dashboard/:username?" render={() => <div>
                     <ConnectedDashBoard />

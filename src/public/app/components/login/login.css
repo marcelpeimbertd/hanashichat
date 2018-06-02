@@ -1,5 +1,6 @@
 .login{
     margin: auto;
+    padding: 50px;
     min-height: 30vh;
     width: 80%;
     display: flex;
@@ -59,6 +60,7 @@
 }
 
 .btn-link{
+    display: inline-block;
     text-decoration: none;
     height: 80px;
     width: 100px;
@@ -73,4 +75,18 @@
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b4e391',    endColorstr='#b4e391',GradientType=0 ); /* IE6-9 */
     border-color: rgb(57, 187, 59);
     border-radius: 60px 0 60px 0;
+    border-width: 2px;
+    border-style: outset;
+    box-sizing: border-box;
+    align-items: flex-start;
+    text-align: center;
+    letter-spacing: normal;
+    word-spacing: normal;
+    text-transform: none;
+    text-indent: 0px;
+    margin: 0em;
+    font-family: Arial;
+    text-rendering: auto;
+    line-height: 80px;
+    font-weight: 400;
 }

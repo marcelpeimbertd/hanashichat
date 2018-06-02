@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React from 'react';
 import { Link, Redirect } from 'react-router-dom';
+import './register';
 
 interface IRegisterProps {
     prop: string;
@@ -43,25 +44,37 @@ class Register extends React.Component<IRegisterProps, IRegisterState> {
         if (this.state.redirect) {
             return <Redirect to="/dashboard" />;
         }
-        return <div>
-            <form onSubmit={this.sendRegister}>
-                <label htmlFor="username">UserName:</label>
-                <input type="text" name="username" id="username" placeholder="Enter User Name" min="5" required />
-                <label htmlFor="lastName">LastName:</label>
-                <input type="text" name="lastName" id="lastName" placeholder="Enter Last Name" required />
-                <label htmlFor="firstName">FirstName:</label>
-                <input type="text" name="firstName" id="firstName" placeholder="Enter First Name" required />
-                <label htmlFor="registerEmail">Email:</label>
-                <input type="email" name="email" id="email" placeholder="leaf@hanashichat.com" required />
-                <label htmlFor="confirmEmail">Confirm Email:</label>
-                <input type="email" name="confirmEmail" id="confirmEmail" placeholder="leaf@hanashichat.com" required />
-                <label htmlFor="registerPass">Password:</label>
-                <input type="password" name="password" id="password" placeholder="Enter Password" required />
-                <label htmlFor="confirmPass">Confirm Password:</label>
-                <input type="password" name="confirmPass" id="confirmPass" placeholder="Confirm Password" required />
-                <input type="submit" value="Register" />
-            </form>
-            <Link to="/login">LogIn</Link>
+        return <div className="register">
+            <div className="container">
+                <h1 className="titleRegister">Hi next leaf</h1>
+                <form className="registerForm" onSubmit={this.sendRegister}>
+                    <input type="text" className="fieldRegister"
+                        name="username" id="username" placeholder="Enter User Name" min="5" required />
+                    <label htmlFor="username" className="fieldRegister labelRegister">UserName</label>
+                    <input type="text" className="fieldRegister"
+                        name="lastName" id="lastName" placeholder="Enter Last Name" required />
+                    <label htmlFor="lastName" className="fieldRegister labelRegister">LastName</label>
+                    <input type="text" className="fieldRegister"
+                        name="firstName" id="firstName" placeholder="Enter First Name" required />
+                    <label htmlFor="firstName" className="fieldRegister labelRegister">FirstName</label>
+                    <input type="email" className="fieldRegister"
+                        name="email" id="email" placeholder="leaf@hanashichat.com" required />
+                    <label htmlFor="registerEmail" className="fieldRegister labelRegister">Email</label>
+                    <input type="email" className="fieldRegister"
+                        name="confirmEmail" id="confirmEmail" placeholder="leaf@hanashichat.com" required />
+                    <label htmlFor="confirmEmail" className="fieldRegister labelRegister">Confirm Email</label>
+                    <input type="password" className="fieldRegister"
+                        name="password" id="password" placeholder="Enter Password" required />
+                    <label htmlFor="registerPass" className="fieldRegister labelRegister">Password</label>
+                    <input type="password" className="fieldRegister"
+                        name="confirmPass" id="confirmPass" placeholder="Confirm Password" required />
+                    <label htmlFor="confirmPass" className="fieldRegister labelRegister">Confirm Password</label>
+                    <div className="fieldRegister btns">
+                        <div><input type="submit" value="Register" className="btn-submit" /></div>
+                        <div><Link to="/login" className="btn-link">LogIn</Link></div>
+                    </div>
+                </form>
+            </div>
         </div>;
     }
 }

@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { ChangeEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { Action } from 'redux-actions';
+import './dashboard';
 
 interface IDATA {
     id?: string | null;
@@ -57,9 +58,12 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
         this.fetch(Array.from(this.state.fetching));
     }
     public render() {
-        return <div>
-            <Link to="/login" onClick={this.logout}>Log out</Link>
-            <input type="search" name="" id="searchUser" placeholder="Search" onChange={this.getUsers} />
+        return <div className="dashboard">
+            <div className="bloque">
+                <Link className="logout" to="/login" onClick={this.logout}>Log <br /> out</Link>
+                <input type="search" className="searchUser"
+                    name="" id="searchUser" placeholder="Search" onChange={this.getUsers} />
+            </div>
             {this.showUsers(this.state.showUsers)}
         </div>;
     }
@@ -258,15 +262,15 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
                 { className: 'add' },
             );
         }
-        return <div>
-            <h1>Contacts</h1>
+        return <div className="navs">
+            <div className="navContacts"><h1>Contacts</h1></div>
             {this.defineList(this.state.contacts,
                 'contact',
                 { className: 'contacts', onClick: this.clickContact },
                 { className: 'contact' },
                 <span className="delete">X</span>,
             )}
-            <h1>Chats</h1>
+            <div className="navChats"><h1>Chats</h1></div>
             {this.defineList(this.state.conversations,
                 'conversation',
                 { className: 'conversations', onClick: this.clickContact },
