@@ -88,10 +88,12 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
                     if (response.data.err) {
                         throw response.data;
                     }
-                    this.props.fetchUsers(response.data);
-                    this.setState({
-                        showUsers: true,
-                    });
+                    if (response.data.status) {
+                        this.props.fetchUsers(response.data);
+                        this.setState({
+                            showUsers: true,
+                        });
+                    }
                 })
                 .catch((err) => {
                     console.log(err);
@@ -218,9 +220,11 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
                 if (response.data.err) {
                     throw response.data.err;
                 }
-                data.conversation = response.data.conversation;
-                this.props.fetchConversation(response.data);
-                this.addContact(data);
+                if (response.data.status) {
+                    data.conversation = response.data.conversation;
+                    this.props.fetchConversation(response.data);
+                    this.addContact(data);
+                }
             })
             .catch((error) => {
                 console.error(error);
@@ -232,15 +236,17 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
                 if (response.data.err) {
                     throw response.data.err;
                 }
-                this.props.fetchUser(response.data);
-                (document.getElementById('searchUser') as HTMLInputElement).setAttribute('textContent', '');
-                this.setState({
-                    fetching: this.state.fetching.concat({
-                        args: response.data.user.contacts,
-                        command: 'contacts',
-                    }),
-                    showUsers: false,
-                });
+                if (response.data.status) {
+                    this.props.fetchUser(response.data);
+                    (document.getElementById('searchUser') as HTMLInputElement).setAttribute('textContent', '');
+                    this.setState({
+                        fetching: this.state.fetching.concat({
+                            args: response.data.user.contacts,
+                            command: 'contacts',
+                        }),
+                        showUsers: false,
+                    });
+                }
             })
             .catch((error) => {
                 console.error(error);

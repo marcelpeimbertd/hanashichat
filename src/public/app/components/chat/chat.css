@@ -76,5 +76,9 @@
 }
 
 .default{
-    text-align: center;
+    align-self: center;
+    background-color: khaki;
+    padding: 10px;
+    font-size: 2rem;
+    margin-bottom: 70px;
 }
