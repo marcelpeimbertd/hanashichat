@@ -16,9 +16,9 @@ export default class ConversationController extends Controller {
             }, (err: MongooseError, conversations) => {
                 if (conversations.length) {
                     const conversation = conversations.find((conv) =>
-                        conv.participants.every((participantID: ObjectId) =>
+                        conv.participants.every((participant: Store.IParticipant) =>
                             req.body.conversation.participants.some((
-                                same: string) => participantID.toString() === same)));
+                                same: Store.IParticipant) => participant.id.toString() === same.id)));
                     req.body.conversation = conversation;
                     req.body.id = conversation.id;
                     return next();

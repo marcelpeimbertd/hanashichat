@@ -240,7 +240,8 @@ export default class UserController extends Controller {
                 return res.send(JSON.stringify(failureMessage));
             } else {
                 // user.conversations.push(req.body.id);
-                const query = req.body.conversation.participants.map((_id: ObjectId) => ({ _id }));
+                const query = req.body.conversation.participants.map(({ id }: { id: ObjectId }) => ({ _id: id }));
+                console.log(JSON.stringify(query));
                 User.updateMany({ $or: query },
                     { $push: { conversations: req.body.id } },
                     (err: MongooseError, raw) => {

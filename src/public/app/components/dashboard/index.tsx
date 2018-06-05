@@ -128,7 +128,7 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
         const conversation = this.state.conversations.find(((conv) => {
             const isConvId = conv.id === id;
             const isContactID = conv.participants.every(
-                (participantID) => participantID === id || participantID === this.props.user.id);
+                (participant) => participant.id === id || participant.id === this.props.user.id);
             return isConvId || isContactID;
         }));
         if (conversation) {
@@ -179,6 +179,15 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
         const target = (event.target as HTMLElement);
         const id = li.getAttribute('id');
         if (id && li.tagName === 'LI') {
+            const arrayinfo = id.split('-');
+            const infoContact = {
+                id: arrayinfo[0],
+                username: arrayinfo[1],
+            };
+            const infoUser = {
+                id: this.props.user.id,
+                username: this.props.user.username,
+            }
             const data: IDATA = {
                 conversation: {
                     isGroup: false,
@@ -187,18 +196,18 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
                         previous: [],
                     },
                     name: '',
-                    participants: [id, this.props.user.id],
+                    participants: [infoContact, infoUser],
                 },
-                id,
+                id: infoContact.id,
             };
             if (li.className === 'add' && target.tagName === 'A') {
                 this.createConversation(data);
             }
             if (target.className === 'delete') {
-                this.deleteContact(id);
+                this.deleteContact(infoContact.id);
             }
             if (li.className === 'conversation' || li.className === 'contact' && target.tagName === 'A') {
-                this.fetchConversation(id);
+                this.fetchConversation(infoContact.id);
             }
         }
         event.preventDefault();
@@ -268,7 +277,7 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
                 'contact',
                 { className: 'contacts', onClick: this.clickContact },
                 { className: 'contact' },
-                <span className="delete">X</span>,
+                <span className="delete"></span>,
             )}
             <div className="navChats"><h1>Chats</h1></div>
             {this.defineList(this.state.conversations,
@@ -292,7 +301,11 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
         if (type === 'contact') {
             return <ul {...ulProps}>
                 {list.map((value) => {
-                    return <li {...liProps} id={value.id} key={value.id}>
+                    return <li {...liProps} id={value.id + '-' + value.username} key={value.id}>
+                        <Link to={'/dashboard/' + value.username}>
+                            <div className="profileIMG"
+                                style={{ backgroundImage: 'url(/images/predefined/user-icon.png)' }}></div>
+                        </Link>
                         <Link to={'/dashboard/' + value.username}>
                             {value.firstName + ' ' + value.lastName}
                         </Link>
@@ -304,29 +317,33 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
         return <ul {...ulProps}>
             {list.map((value: Store.IConversation) => {
                 if (value.messages.current) {
-                    const participantID = value.participants.filter((participant) => {
-                        return participant !== this.props.user.id;
+                    const participant = value.participants.filter((value) => {
+                        return value.id !== this.props.user.id;
                     })[0];
                     let convParticipant: Store.IUser | undefined;
-                    if (!participantID) {
-                        const isMe = value.participants.every((participant) => {
-                            return participant === this.props.user.id;
+                    if (!participant) {
+                        const isMe = value.participants.every((value) => {
+                            return value.id === this.props.user.id;
                         });
                         convParticipant = isMe ? this.props.user : undefined;
                     } else {
                         convParticipant = this.state.contacts.find((contact) => {
-                            return contact.id === participantID;
+                            return contact.id === participant.id;
                         });
                     }
                     value.name = value.name ?
                         value.name :
                         convParticipant ?
                             convParticipant.firstName + ' ' + convParticipant.lastName :
-                            value.id;
+                            participant.username;
                     return <li {...liProps} id={value.id} key={value.id}>
                         <Link to={`/dashboard/${value.id}`}>
+                            <div className="profileIMG"
+                                style={{ backgroundImage: 'url(/images/predefined/user-icon.png)' }}></div>
+                        </Link>
+                        <Link to={`/dashboard/${value.id}`}>
                             {value.name} <br />
-                            <div>{value.messages.current.message}</div>
+                            <div className="lastMessage">{value.messages.current.message}</div>
                         </Link>
                         {extraElements}
                     </li>;

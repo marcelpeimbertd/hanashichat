@@ -11,16 +11,22 @@ export default (
                 <Route exact path="/" render={(props) => (
                     [<div className="top">
                         <div className="leafIcon"></div>
-                        <h1 className="title">HanashiChat</h1>
+                        <h1 className="title">
+                        Ha-nashi Chat <br/>
+                        葉-なし ちゃっと
+                        </h1>
                     </div>,
                     <ConnectedLogin {...props} />])} />
                 <Route path="/login" render={(props) => (
                     [<div className="top">
                         <div className="leafIcon"></div>
-                        <h1 className="title">HanashiChat</h1>
+                        <h1 className="title">
+                        Ha-nashi Chat <br/>
+                        葉-なし ちゃっと
+                        </h1>
                     </div>,
                     <ConnectedLogin {...props} />])} />
-                <Route path="/dashboard/:username?" render={() => <div>
+                <Route path="/dashboard/:username?" render={() => <div className="room">
                     <ConnectedDashBoard />
                     <Route path="/dashboard/:username" render={() =>
                         <ConnectedChat />} />

@@ -5,7 +5,7 @@ type MessagesType = Base.Versionable<{}>;
 export const messagesSchema: MessagesType = {
     current: {
         date: Date,
-        message: String,
+        message: {type: String, require: true},
         userid: String,
     },
     previous: [{

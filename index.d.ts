@@ -81,7 +81,12 @@ declare namespace Store {
         id: string;
         messages: MessagesType;
         name: string;
-        participants: string[];
+        participants: IParticipant[];
+    }
+    
+    export interface IParticipant{
+        id: string;
+        username: string;
     }
 
     export interface IAppState {

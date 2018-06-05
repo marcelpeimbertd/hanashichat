@@ -1,0 +1,80 @@
+.chatbox {
+    display: flex;
+    flex-flow: column;
+    flex: 1 1 0;
+    background-color: aliceblue;
+}
+
+.messagesbox{    
+    display: flex;
+    flex-flow: column;
+    flex: 1 1 0;
+}
+
+.senderbox{
+    height: 30px;
+    display: flex;
+    flex-flow: row;
+    padding: 15px;
+    background-color: lightsteelblue;
+}
+
+.clientBox{
+    flex: 1 1 0;
+}
+
+.containerbox {
+    display: flex;
+    flex-flow: row;
+    align-items: flex-end;
+    flex: 1 1 0;
+    padding: 15px 0;
+}
+
+.message{
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    padding: 10px 0;
+    border-radius: 10px;
+    font-size: 1.3rem;
+}
+
+.me{
+    align-self: flex-start;
+    flex-direction: row;
+}
+
+.participant{
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+.timeMessage{
+    font-size: 0.85rem;
+    align-self: flex-end;
+    padding: 0 8px;
+}
+
+.messagetext{
+    max-width: 600px;
+    padding: 10px;
+}
+
+.messagetext>*{
+    display: flex;
+    flex-flow: row;
+    text-align: justify;
+}
+
+.meColor{
+    background-color: #3afa64;
+}
+
+.participantColor{
+    background-color: lightgoldenrodyellow;
+}
+
+.default{
+    text-align: center;
+}

@@ -8,7 +8,17 @@ export const conversationSchema: ConversationType = {
     isPublic: Boolean,
     messages: MessagesSchema,
     name: String,
-    participants: [{ type: Schema.Types.ObjectId, ref: 'User', require: true }],
+    participants: [new Schema({
+        id: {
+            ref: 'User',
+            require: true,
+            type: Schema.Types.ObjectId,
+        },
+        username: {
+            require: true,
+            type: String,
+        },
+    }, { _id: false })],
 };
 const ConversationSchema = new Schema(
     (conversationSchema as ConversationType),

@@ -20,7 +20,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#5ee002', end
 .leafIcon { 
     width: 100px;
     height: 100px;
-    background-image: url('./images/icons/leafsquare.png');
+    background-image: url('/images/icons/leafsquare.png');
     background-repeat: no-repeat;
     background-size: 103px;
     background-position: -1.5px;
@@ -46,4 +46,10 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#5ee002', end
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#005700', endColorstr='#002400',GradientType=0 ); /* IE6-9 */
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+}
+
+.room {
+    display: flex;
+    flex-flow: row;
+    align-items: stretch;
 }

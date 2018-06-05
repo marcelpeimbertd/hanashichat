@@ -38,7 +38,7 @@ class App extends React.Component<IAppProps, IAppState> {
     }
     public isLoggedIn() {
         if (!this.props.user.email) {
-            axios.get('isloggedin')
+            axios.get('/isloggedin')
                 .then(({ data }) => {
                     if (data.err) {
                         throw data;
