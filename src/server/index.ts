@@ -6,7 +6,7 @@ import session from 'express-session';
 import http from 'http';
 import morgan from 'morgan';
 import path from 'path';
-import socketIO from 'socket.io';
+import initSockets from './config/socketio';
 import initMongoose from './config/mongoose';
 import initPassport from './config/passport';
 import setApiRoutes from './routes/apiRoutes';
@@ -42,16 +42,7 @@ try {
     });
 
     const serverHTTP = http.createServer(app);
-    const io = socketIO(serverHTTP);
-    io.on('connection', (socket) => {
-        socket.on('chat message', (msg) => {
-            console.log(msg);
-        });
-        socket.on('get messages', () => {
-            const messages: JSON = require('../../db/seed/messages.json');
-            io.emit('get messages', messages);
-        });
-    });
+    initSockets(serverHTTP);
 
     serverHTTP.listen(3000, () => { console.log('server running on port 3000'); });
 

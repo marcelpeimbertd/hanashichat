@@ -17,6 +17,7 @@ interface IFetching {
 interface IDashBoardProps {
     user: Store.IUser;
     users: Store.IUsers;
+    update: Store.IConversation;
     fetchConversation: (t1: Store.IConversationPayload) => Action<Store.IConversationPayload>;
     fetchUser: (t1: Store.IUserPayload) => Action<Store.IUserPayload>;
     fetchUsers: (t1: Store.IUsersPayload) => Action<Store.IUsersPayload>;
@@ -59,6 +60,10 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
     }
     public render() {
         return <div className="dashboard">
+            <div className="bloque">
+                <div className="profileIMG"
+                    style={{ backgroundImage: 'url(/images/predefined/user-icon.png)' }}></div>
+            </div>
             <div className="bloque">
                 <Link className="logout" to="/login" onClick={this.logout}>Log <br /> out</Link>
                 <input type="search" className="searchUser"
@@ -161,6 +166,7 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
         if (conversations.length !== this.state.conversations.length && conversations.length) {
             axios.post('/conversations')
                 .then((response) => {
+                    joinRooms(response.data.conversations);
                     this.setState({
                         conversations: response.data.conversations,
                         fetching: this.state.fetching.slice(1),
@@ -189,7 +195,7 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
             const infoUser = {
                 id: this.props.user.id,
                 username: this.props.user.username,
-            }
+            };
             const data: IDATA = {
                 conversation: {
                     isGroup: false,
@@ -222,6 +228,7 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
                 }
                 if (response.data.status) {
                     data.conversation = response.data.conversation;
+                    joinRooms([response.data.conversation]);
                     this.props.fetchConversation(response.data);
                     this.addContact(data);
                 }

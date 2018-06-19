@@ -3,6 +3,7 @@ import React from 'react';
 import { RouteProps } from 'react-router';
 import { Link, Redirect } from 'react-router-dom';
 import { Action } from 'redux-actions';
+import { connectIO } from '../../socketio/config';
 import './app';
 import { IAppProps } from './index';
 
@@ -44,6 +45,7 @@ class App extends React.Component<IAppProps, IAppState> {
                         throw data;
                     }
                     if (data.user) {
+                        connectIO();
                         this.props.fetchUser(data);
                         this.setState({
                             isLogged: true,

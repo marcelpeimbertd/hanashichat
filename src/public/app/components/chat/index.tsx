@@ -3,7 +3,7 @@ import moment from 'moment';
 import React from 'react';
 import { RouteProps } from 'react-router';
 import { Action } from 'redux-actions';
-import io from 'socket.io-client';
+import { updateConversation } from '../../socketio/config';
 import './chat';
 
 interface IChatProps extends RouteProps {
@@ -12,7 +12,7 @@ interface IChatProps extends RouteProps {
     fetchConversation: (t1: Store.IConversationPayload) => Action<Store.IConversationPayload>;
 }
 
-type EspecialEvent = React.KeyboardEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement>;
+type EspecialEvent = React.KeyboardEvent<HTMLTextAreaElement> | React.MouseEvent<HTMLButtonElement>;
 class Chat extends React.Component<IChatProps> {
     constructor(props: IChatProps) {
         super(props);
@@ -24,8 +24,9 @@ class Chat extends React.Component<IChatProps> {
         console.log('hi');
     }
     public sendMessage = (event: EspecialEvent) => {
-        if ((event as React.KeyboardEvent<HTMLInputElement>).key === 'Enter' &&
-            (event.target as HTMLInputElement).className === 'clientBox') {
+        if (!(event as React.KeyboardEvent<HTMLTextAreaElement>).shiftKey &&
+            (event as React.KeyboardEvent<HTMLTextAreaElement>).key === 'Enter' &&
+            (event.target as HTMLTextAreaElement).className === 'clientBox') {
             const data = {
                 conversationID: this.props.conversation.id,
                 current: this.props.conversation.messages.current,
@@ -41,10 +42,13 @@ class Chat extends React.Component<IChatProps> {
                         throw response.data.err;
                     }
                     this.props.fetchConversation(response.data);
+                    updateConversation(response.data.conversation);
                 })
                 .catch((error) => {
                     console.error(error);
                 });
+            (event.target as HTMLInputElement).value = '';
+            event.preventDefault();
         }
     }
     public render() {
@@ -62,7 +66,7 @@ class Chat extends React.Component<IChatProps> {
                 </div>
             </div>
             <div className="senderbox">
-                <input {...inputOptions} />
+                <textarea {...inputOptions} />
                 <button className="btn" type="button">Send</button>
             </div>
         </div>;
@@ -88,7 +92,9 @@ class Chat extends React.Component<IChatProps> {
                     .concat(' ', MESSAGETEXT,
                         ' ', messages.current.userid === this.props.user.id ? MECOLOR : PARTICIPANTCOLOR)}>
                     <p>
-                        {messages.current.message} <span className="timeMessage" >
+                        {messages.current.message.split('\n').map((item, key) => {
+                            return [item, <br />];
+                        })} <span className="timeMessage" >
                             {this.getTime(new Date(messages.current.date))}
                         </span>
                     </p>
@@ -105,7 +111,9 @@ class Chat extends React.Component<IChatProps> {
                         .concat(' ', MESSAGETEXT,
                             ' ', value.userid === this.props.user.id ? MECOLOR : PARTICIPANTCOLOR)}>
                         <p>
-                            {value.message} <span className="timeMessage" >
+                            {value.message.split('\n').map((item, key) => {
+                                return [item, <br />];
+                            })} <span className="timeMessage" >
                                 {this.getTime(new Date(value.date))}
                             </span>
                         </p>
@@ -115,7 +123,11 @@ class Chat extends React.Component<IChatProps> {
             return [...previousMessages, currentMessage];
         }
 
-        return <p className="message default">Say Hello</p>;
+        return <div className="message">
+            <div className="defaultWrapper">
+                <p className="message default">Say Hello</p>
+            </div>
+        </div>;
     }
     private getTime(date: Date) {
         const now = new Date();

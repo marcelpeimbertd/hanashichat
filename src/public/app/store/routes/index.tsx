@@ -13,7 +13,7 @@ export default (
                         <div className="leafIcon"></div>
                         <h1 className="title">
                         Ha-nashi Chat <br/>
-                        葉-なし ちゃっと
+                        葉-なし チャット
                         </h1>
                     </div>,
                     <ConnectedLogin {...props} />])} />
@@ -22,7 +22,7 @@ export default (
                         <div className="leafIcon"></div>
                         <h1 className="title">
                         Ha-nashi Chat <br/>
-                        葉-なし ちゃっと
+                        葉-なし チャット
                         </h1>
                     </div>,
                     <ConnectedLogin {...props} />])} />

@@ -1,6 +1,4 @@
 declare namespace Base {
-    import { type } from './src/server/models/user';
-    import { IConversation } from './index.d';
     export interface IUser {
         username: any;
         firstName: any;
@@ -91,6 +89,6 @@ declare namespace Store {
 
     export interface IAppState {
         users: IUsersState;
-        conversation: { current: IConversation };
+        conversation: { current: IConversation, update: IConversation };
     }
 }

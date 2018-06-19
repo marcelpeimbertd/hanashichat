@@ -3,6 +3,7 @@ import React from 'react';
 import { Redirect } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Action } from 'redux-actions';
+import { connectIO } from '../../socketio/config';
 import './login';
 
 interface ILoginProps {
@@ -33,6 +34,7 @@ class Login extends React.Component<ILoginProps, ILoginState> {
                 if (data.err) {
                     throw data;
                 }
+                connectIO();
                 this.props.fetchUser({ user: data.user });
                 this.setState({ redirect: data.redirect });
             })

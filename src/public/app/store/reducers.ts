@@ -1,9 +1,27 @@
 import { createAction, handleAction, handleActions } from 'redux-actions';
 
 // Conversation
+interface IConversationState {
+    current: Store.IConversation;
+    update: Store.IConversation;
+}
 const FETCH_CONVERSATION = 'FETCH_CONVERSATION';
-const initialStateConversation: { current: Store.IConversation } = {
+const UPDATE_CONVERSATION = 'UPDATE_CONVERSATION';
+const initialStateConversation: IConversationState = {
     current: {
+        id: '',
+        messages: {
+            current: {
+                date: new Date(),
+                message: '',
+                userid: '',
+            },
+            previous: [],
+        },
+        name: '',
+        participants: [],
+    },
+    update: {
         id: '',
         messages: {
             current: {
@@ -20,11 +38,17 @@ const initialStateConversation: { current: Store.IConversation } = {
 
 export const fetchConversationActionCreator = createAction<Store.IConversationPayload>(FETCH_CONVERSATION);
 
+export const updateConversationActionCreator = createAction<Store.IConversationPayload>(UPDATE_CONVERSATION);
+
 export const reducerConversation =
-    handleActions<{ current: Store.IConversation }, Store.IConversationPayload>({
+    handleActions<IConversationState, Store.IConversationPayload>({
         [FETCH_CONVERSATION]: (state, { payload = { conversation: initialStateConversation.current } }) => ({
             ...state,
             current: payload.conversation,
+        }),
+        [UPDATE_CONVERSATION]: (state, { payload = { conversation: initialStateConversation.current } }) => ({
+            ...state,
+            update: payload.conversation,
         }),
     }, initialStateConversation);
 
