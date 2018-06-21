@@ -1,0 +1,158 @@
+.dashboard{
+    height: 100vh;
+    width: 20vw;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    background-color: lightgrey;
+}
+
+.logout{
+    display: inline-block;
+    text-decoration: none;
+    height: 40px;
+    width: 50px;
+    font-size: 0.7rem;
+    text-shadow: 1px 1px 0.5px black;
+    color: white;
+    background: rgb(180,227,145);
+    background: -moz-linear-gradient(top, rgba(180,227,145,1) 0%, rgba(97,196,25, 1) 50%, rgba(180,227,145,1) 100%);
+    background: -webkit-linear-gradient(top, rgba(180,227,145,1) 0%,rgba(97,196, 25,1) 50%,rgba(180,227,145,1) 100%);
+    background: linear-gradient(to bottom, rgba(180,227,145,1) 0%,rgba(97,196,25, 1) 50%,rgba(180,227,145,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b4e391', endColorstr='#b4e391',GradientType=0 );
+    border-color: rgb(57, 187, 59);
+    border-radius: 60px 0 60px 0;
+    border-width: 2px;
+    border-style: outset;
+    box-sizing: border-box;
+    align-items: flex-start;
+    text-align: center;
+    letter-spacing: normal;
+    word-spacing: normal;
+    text-transform: none;
+    text-indent: 0px;
+    margin: 0em;
+    font-family: Arial;
+    text-rendering: auto;
+    line-height: 15px;
+    font-weight: 400;
+    margin-right: 20px;
+}
+
+.bloque{
+    margin-top: 10px;
+}
+
+.searchUser {
+    width: 73%;
+    height: 30px;
+    font-size: 1.3rem;
+    border-radius: 20px;
+    padding-left: 30px;
+}
+
+.navs{
+    width: 100%;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    margin-top: 50px;
+    font-size: 1.5rem;
+    background-color: white;
+}
+
+.navContacts, .navChats {
+    height: 70px;
+    width: 100%;
+    background-color: gray;
+    text-align: center;
+    color: white;
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#cedce7+4,596a72+100 */
+    background: rgb(206,220,231); /* Old browsers */
+    background: -moz-linear-gradient(top, rgb(206,220,231) 4%, rgb(89,106,114)  100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, rgb(206,220,231) 4%,rgb(89,106,114)    100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, rgb(206,220,231) 4%,rgb(89,106,114)  100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cedce7',    endColorstr='#596a72',GradientType=0 ); /* IE6-9 */
+}
+
+.navContacts>*, .navChats>* {
+    margin: 10px;
+    font-size: 3rem;
+}
+
+.contacts, .conversations{
+    width: 100%;
+}
+
+.contact, .conversation{
+    height: 60px;
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#eeeeee+86,cccccc+100 */
+    background: rgb(238,238,238); /* Old browsers */
+    background: -moz-linear-gradient(top, rgb(238,238,238) 86%, rgb(204,204,204) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, rgb(238,238,238) 86%,rgb(204,204,204) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, rgb(238,238,238) 86%,rgb(204,204,204) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#cccccc',GradientType=0 ); /* IE6-9 */
+}
+
+.contact>a, .conversation>a{
+    text-decoration: none;
+}
+
+.lastMessage{
+    font-size: 1rem;
+    margin: 3px;
+    margin-left: 20px;
+    overflow: hidden;
+    height: 19px;
+}
+
+.delete{
+    font-size: 1rem;
+    margin: 10px;
+    background-image: url('/images/icons/delete.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    color: white;
+    padding: 2px;
+    height: 17px;
+    width: 17px;
+}
+
+.users{
+    margin-top: 50px;
+    background-color: white;
+    flex: 1 1 0;
+    width: 100%;
+}
+
+.add{
+    padding: 10px 20px;
+    font-size: 1.3rem;
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#eeeeee+86,cccccc+100 */
+    background: rgb(238,238,238); /* Old browsers */
+    background: -moz-linear-gradient(top, rgb(238,238,238) 86%, rgb(204,204,204) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, rgb(238,238,238) 86%,rgb(204,204,204) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, rgb(238,238,238) 86%,rgb(204,204,204) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#cccccc',GradientType=0 ); /* IE6-9 */
+}
+
+.add>*{
+    text-decoration: none;
+    color: black;
+}
+
+.profileIMG{
+    margin-right: 15px;
+    width: 40px;
+    height: 40px;
+    border-radius: 40px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    margin: 0 15px;
+}

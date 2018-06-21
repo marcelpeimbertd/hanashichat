@@ -1,0 +1,71 @@
+.register{
+    margin: auto;
+    padding: 20px;
+    width: 80%;
+    display: flex;
+    flex-flow: row;
+    flex: 1 1 0;
+}
+
+.container{
+    display: flex;
+    flex-flow: column;
+    flex: 1 1 0;
+}
+
+.registerForm{
+    padding: 10px;
+    height: 800px;
+    display: flex;
+    flex-flow: column;
+    width: 80%;
+    align-items: center;
+    text-shadow: 0.5px 0.5px 1px black;
+    font-weight: 550;
+    color: darkgreen;
+    flex: 1 1 0;
+}
+
+.labelRegister {
+    position: relative;
+    left: 10px;
+    text-decoration: overline;
+}
+
+.fieldRegister {
+    width: 80%;
+    display: flex;
+    align-items: center;
+    font-size: 2rem;
+    height: 7%;
+}
+
+.fieldRegister>*{
+    flex: 1 1 0;
+    width: 40%;
+    text-align: center;
+    font-size: 1.6rem;
+}
+
+.titleRegister{
+    text-align: center;
+    font-size: 8rem;
+    width: 80%;
+    /* text-shadow: 1px 1px 0.5px black, 
+                -1px -1px 0.5px white, 
+                1px -1px 0.5px lightgreen; */
+    font-weight: 400;
+    font-family: fantasy;
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#005700+0,52b152+2,008a00+83,005700+97,002400+100 */
+    background: rgb(0,87,0); /* Old browsers */
+    background: -moz-linear-gradient(top, rgb(0,87,0) 0%, rgb(82,177,82) 2%, rgb(0,138,0) 83%, rgb(0,87,0) 97%, rgb(0,36,0) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, rgb(0,87,0) 0%,rgb(82,177,82) 2%,rgb(0,138,0) 83%,rgb(0,87,0) 97%,rgb(0,36,0) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, rgb(0,87,0) 0%,rgb(82,177,82) 2%,rgb(0,138,0) 83%,rgb(0,87,0) 97%,rgb(0,36,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#005700', endColorstr='#002400',GradientType=0 ); /* IE6-9 */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.btns{
+    
+}

@@ -1,0 +1,92 @@
+.login{
+    margin: auto;
+    padding: 50px;
+    min-height: 30vh;
+    width: 80%;
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+}
+
+.loginForm{
+    min-height: 300px;
+    display: flex;
+    flex-flow: column;
+    width: 80%;
+    align-items: center;
+    text-shadow: 0.5px 0.5px 1px black;
+    font-weight: 550;
+    color: darkgreen;
+}
+
+.label {
+    position: relative;
+    left: 10px;
+    text-decoration: overline;
+}
+
+.field {
+    width: 80%;
+    display: flex;
+    align-items: center;
+    flex: 1 0.5 0;
+    font-size: 2rem;
+}
+
+.field>*{
+    flex: 1 1 0;
+    width: 40%;
+    text-align: center;
+    height: 80%;
+    font-size: 1.6rem;
+}
+
+
+
+.btn-submit {
+    height: 80px;
+    width: 100px;
+    font-size: 1.3rem;
+    text-shadow: 1px 1px 0.5px black;
+    color: white;
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#b4e391+0,61c419+50,b4e391+100;Green+3D */
+    background: rgb(180,227,145); /* Old browsers */
+    background: -moz-linear-gradient(top, rgba(180,227,145,1) 0%, rgba(97,196,25,   1) 50%, rgba(180,227,145,1) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, rgba(180,227,145,1) 0%,rgba(97,196,    25,1) 50%,rgba(180,227,145,1) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, rgba(180,227,145,1) 0%,rgba(97,196,25,   1) 50%,rgba(180,227,145,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+,   Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b4e391',    endColorstr='#b4e391',GradientType=0 ); /* IE6-9 */
+    border-color: rgb(57, 187, 59);
+    border-radius: 60px 0 60px 0;
+}
+
+.btn-link{
+    display: inline-block;
+    text-decoration: none;
+    height: 80px;
+    width: 100px;
+    font-size: 1.3rem;
+    text-shadow: 1px 1px 0.5px black;
+    color: white;
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#b4e391+0,61c419+50,b4e391+100;Green+3D */
+    background: rgb(180,227,145); /* Old browsers */
+    background: -moz-linear-gradient(top, rgba(180,227,145,1) 0%, rgba(97,196,25,   1) 50%, rgba(180,227,145,1) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, rgba(180,227,145,1) 0%,rgba(97,196,    25,1) 50%,rgba(180,227,145,1) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, rgba(180,227,145,1) 0%,rgba(97,196,25,   1) 50%,rgba(180,227,145,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+,   Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b4e391',    endColorstr='#b4e391',GradientType=0 ); /* IE6-9 */
+    border-color: rgb(57, 187, 59);
+    border-radius: 60px 0 60px 0;
+    border-width: 2px;
+    border-style: outset;
+    box-sizing: border-box;
+    align-items: flex-start;
+    text-align: center;
+    letter-spacing: normal;
+    word-spacing: normal;
+    text-transform: none;
+    text-indent: 0px;
+    margin: 0em;
+    font-family: Arial;
+    text-rendering: auto;
+    line-height: 80px;
+    font-weight: 400;
+}

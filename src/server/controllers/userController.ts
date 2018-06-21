@@ -1,5 +1,5 @@
 import { NextFunction, Request, RequestHandler, Response } from 'express-serve-static-core';
-import { MongoError } from 'mongodb';
+import { MongoError, ObjectId } from 'mongodb';
 import User from '../models/user';
 import Controller from './abstractController';
 
@@ -10,12 +10,47 @@ export default class UserController extends Controller {
     // Create a new controller method that log in a 'regular' users
     public login: RequestHandler = (req, res) => {
         if (req.user) {
-            res.send(JSON.stringify(req.user));
+            const successMessage = {
+                redirect: '/dashboard',
+                status: 1,
+                user: this.getUserFields((req.user as Store.IUser)),
+            };
+            res.send(JSON.stringify(successMessage));
+        } else {
+            // Redirect the user back to the main application page
+            res.redirect('error');
         }
-        // Redirect the user back to the main application page
-        res.send('login');
     }
-
+    // Create a new controller method that log in a 'regular' users
+    public loginFails: RequestHandler = (req, res) => {
+        const err = req.flash('error');
+        const failureMessage = {
+            err,
+            message: err[0],
+            status: 0,
+        };
+        res.send(JSON.stringify(failureMessage));
+    }
+    // Create a new controller method that check if user is logged
+    public isLoggedIn: RequestHandler = (req, res) => {
+        let redirect = req.baseUrl;
+        if (req.user) {
+            redirect = redirect !== '/' ? redirect : '/dashboard';
+            const successMessage = {
+                redirect,
+                status: 1,
+                user: this.getUserFields((req.user as Store.IUser)),
+            };
+            res.send(JSON.stringify(successMessage));
+        } else {
+            redirect = redirect !== '/' ? redirect : '/login';
+            const notLoggedMessage = {
+                redirect,
+                status: 0,
+            };
+            res.send(JSON.stringify(notLoggedMessage));
+        }
+    }
     // Create a new controller method that creates new 'regular' users
     public register: (/* transporter: Transporter */) => RequestHandler = (/* transporter */) =>
         (req, res, next) => {
@@ -25,8 +60,7 @@ export default class UserController extends Controller {
             if (!req.user) {
                 // Create a new 'User' model instance
                 const user = new User(req.body);
-                user.comments = '';
-                var message = null;
+                // var message = null;
 
                 // Set the user provider property
                 user.provider = 'local';
@@ -36,12 +70,18 @@ export default class UserController extends Controller {
                     // If an error occurs, use flash messages to report the error
                     if (err) {
                         // Use the error handling method to get the error message
-                        var message = this.getErrorMessage(err);
+                        const message = this.getErrorMessage(err);
                         // Set the flash messages
                         req.flash('error', message);
 
+                        const failureMessage = {
+                            err,
+                            message,
+                            status: 0,
+                        };
+
                         // Redirect the user back to the signup page
-                        return res.redirect('/signup');
+                        return res.send(JSON.stringify(failureMessage));
                     }
 
                     /* transporter.sendMail({
@@ -53,33 +93,47 @@ export default class UserController extends Controller {
                     req.login(user, function (err) {
                         // If a login error occurs move to the next middleware
                         if (err) { return console.log(err); }
-
+                        const successMessage = {
+                            redirect: '/dashboard',
+                            status: 1,
+                            userid: user.id,
+                        };
                         // Redirect the user back to the main application page
-                        return res.redirect('/board');
+                        return res.send(JSON.stringify(successMessage));
                     });
                 });
             } else {
-                return res.redirect('/signin');
+                const successMessage = {
+                    redirect: '/dashboard',
+                    status: 1,
+                    userid: req.user.id,
+                };
+                return res.send(JSON.stringify(successMessage));
             }
         }
     // Create a new controller method for signing out
-    public signout: RequestHandler = (req, res) => {
+    public logout: RequestHandler = (req, res) => {
         // Use the Passport 'logout' method to logout
         req.logout();
+        const successMessage = {
+            redirect: 'login',
+            status: 0,
+            userid: '',
+        };
         // Redirect the user back to the main application page
-        res.redirect('/signin');
+        res.send(JSON.stringify(successMessage));
     }
     // Create a new controller method for forgot Pass
-    public forgotPass: (transporter: Transporter) => RequestHandler = (transporter) =>
+    public forgotPass: (/* transporter: Transporter */) => RequestHandler = (/* transporter */) =>
         (req, res) => {
             User.findOne({ username: req.body.username })
                 .then((user) => {
                     if (user) {
-                        transporter.sendMail({
-                            subject: 'Link para resetear el password',
-                            text: 'url with code for resetPass',
-                            to: user.email,
-                        });
+                        /*  transporter.sendMail({
+                             subject: 'Link para resetear el password',
+                             text: 'url with code for resetPass',
+                             to: user.email,
+                         }); */
 
                         // Redirect the user back to the main application page
                         res.redirect('/signin');
@@ -92,32 +146,225 @@ export default class UserController extends Controller {
             res.send(req.user.role.toString());
         }
     }
-    // Create a new controller method for send users
-    public sendUsers: RequestHandler = (req, res) => {
+    // Create a new controller methid for get users by username o email
+    public getUsersByUsernameOrEmail: RequestHandler = (req, res) => {
+        if (req.body.looking) {
+            const looking = new RegExp(`.*${req.body.looking}.*`, 'i');
+            User.find({ $or: [{ username: looking }, { email: looking }] }, (err, users) => {
+                if (err) {
+                    const ErrorMessage = {
+                        err,
+                        message: 'Users Not match',
+                        status: 0,
+                    };
+                    return res.send(JSON.stringify(ErrorMessage));
+                }
+                if (users) {
+                    const results = users.map((user) => this.getUserFields((user as Store.IUser)));
+                    const successMessage = {
+                        redirect: '/dashboard',
+                        status: 1,
+                        users: results,
+                    };
+                    return res.send(JSON.stringify(successMessage));
+                } else {
+                    const notUsersMessage = {
+                        message: 'Users Not match',
+                        status: 0,
+                    };
+                    res.send(JSON.stringify(notUsersMessage));
+                }
+            });
+        } else {
+            const notSearchMessage = {
+                message: 'no info to search',
+                status: 0,
+            };
+            res.send(JSON.stringify(notSearchMessage));
+        }
+    }
+
+    // sending contacts info
+    public getContactsByID: RequestHandler = (req, res) => {
         if (req.user) {
-            User.find()
-                .then((Users) => {
-                    const users = Users.map((user) => {
-                        const { firstName, lastName, visits, confirmation: {
-                            current: { status } },
-                            fee: {
-                                current: { ammout } } } = user;
-                        return { firstName, lastName, visits, confirmation: status, fee: ammout };
+            const user = req.user;
+            const queryContacts = user.contacts.map((_id: ObjectId) => ({ _id }));
+            User.find({ $or: queryContacts }, (err, contacts) => {
+                if (err) {
+                    const ErrorMessage = {
+                        err,
+                        message: 'Users Not match',
+                        status: 0,
+                    };
+                    return res.send(JSON.stringify(ErrorMessage));
+                }
+                if (contacts) {
+                    const results = contacts.map((contact) => this.getUserFields((contact as Store.IUser)));
+                    const successMessage = {
+                        contacts: results,
+                        redirect: '/dashboard',
+                        status: 1,
+                        user,
+                    };
+                    return res.send(JSON.stringify(successMessage));
+                } else {
+                    const notContactsMessage = {
+                        message: 'Contacts Not match',
+                        status: 0,
+                    };
+                    res.send(JSON.stringify(notContactsMessage));
+                }
+            });
+        } else {
+            const notLoggedMessage = {
+                message: 'no user logged',
+                status: 0,
+            };
+            res.send(JSON.stringify(notLoggedMessage));
+        }
+    }
+    // adding new conversations
+    public addConversation: RequestHandler = (req, res) => {
+        if (req.user) {
+            const user = req.user;
+            const isRepeated = user.conversations.some((conversationid: ObjectId) => {
+                return conversationid.toString() === req.body.id;
+            });
+            if (isRepeated) {
+                const failureMessage = {
+                    conversation: this.getConversationFields(req.body.conversation),
+                    message: 'conversation already exists',
+                    status: 1,
+                };
+                // Redirect the user back to the signup page
+                return res.send(JSON.stringify(failureMessage));
+            } else {
+                // user.conversations.push(req.body.id);
+                const query = req.body.conversation.participants.map(({ id }: { id: ObjectId }) => ({ _id: id }));
+                console.log(JSON.stringify(query));
+                User.updateMany({ $or: query },
+                    { $push: { conversations: req.body.id } },
+                    (err: MongooseError, raw) => {
+                        // If an error occurs, use flash messages to report the error
+                        if (err) {
+                            // Use the error handling method to get the error message
+                            const message = this.getErrorMessage(err);
+                            // Set the flash messages
+                            req.flash('error', message);
+
+                            const failureMessage = {
+                                err,
+                                message,
+                                status: 0,
+                            };
+
+                            // Redirect the user back to the signup page
+                            return res.send(JSON.stringify(failureMessage));
+                        }
+                        user.conversations.push(req.body.id);
+                        const successMessage = {
+                            conversation: this.getConversationFields(req.body.conversation),
+                            status: 1,
+                            user: this.getUserFields((user as Store.IUser)),
+                        };
+                        res.send(JSON.stringify(successMessage));
                     });
-                    res.send(users);
-                })
-                .catch((err) => {
+            }
+        } else {
+            const notLoggedMessage = {
+                message: 'no user logged',
+                status: 0,
+            };
+            res.send(JSON.stringify(notLoggedMessage));
+        }
+    }
+    // adding new contacts
+    public addContact: RequestHandler = (req, res) => {
+        if (req.user) {
+            const user = req.user;
+            const isRepeated = user.contacts.some((contactid: ObjectId) => {
+                return contactid.toString() === req.body.id;
+            });
+            if (isRepeated) {
+                const failureMessage = {
+                    message: 'contact already exists',
+                    status: 0,
+                };
+                // Redirect the user back to the signup page
+                return res.send(JSON.stringify(failureMessage));
+            } else {
+                user.contacts.push(req.body.id);
+                user.save((err: MongooseError) => {
                     // If an error occurs, use flash messages to report the error
                     if (err) {
                         // Use the error handling method to get the error message
-                        var message = this.getErrorMessage(err);
+                        const message = this.getErrorMessage(err);
                         // Set the flash messages
                         req.flash('error', message);
 
+                        const failureMessage = {
+                            err,
+                            message,
+                            status: 0,
+                        };
+
                         // Redirect the user back to the signup page
-                        return res.send('Error');
+                        return res.send(JSON.stringify(failureMessage));
                     }
+                    const successMessage = {
+                        status: 1,
+                        user: this.getUserFields((user as Store.IUser)),
+                    };
+                    res.send(JSON.stringify(successMessage));
                 });
+            }
+        } else {
+            const notLoggedMessage = {
+                message: 'no user logged',
+                status: 0,
+            };
+            res.send(JSON.stringify(notLoggedMessage));
+        }
+    }
+    public deleteContact: RequestHandler = (req, res) => {
+        if (req.user) {
+            const user = req.user;
+            const isContact = user.contacts.findIndex((contactid: ObjectId) => {
+                return contactid.toString() === req.query.id;
+            });
+            if (!~isContact) {
+                const failureMessage = {
+                    message: 'contact doesn\'t exists',
+                    status: 0,
+                };
+                // Redirect the user back to the signup page
+                return res.send(JSON.stringify(failureMessage));
+            } else {
+                user.contacts.splice(isContact, 1);
+                user.save((err: MongooseError) => {
+                    // If an error occurs, use flash messages to report the error
+                    if (err) {
+                        // Use the error handling method to get the error message
+                        const message = this.getErrorMessage(err);
+                        // Set the flash messages
+                        req.flash('error', message);
+
+                        const failureMessage = {
+                            err,
+                            message,
+                            status: 0,
+                        };
+
+                        // Redirect the user back to the signup page
+                        return res.send(JSON.stringify(failureMessage));
+                    }
+                    const successMessage = {
+                        status: 1,
+                        user: this.getUserFields((user as Store.IUser)),
+                    };
+                    res.send(JSON.stringify(successMessage));
+                });
+            }
         }
     }
     // Create a new error handling controller method
@@ -129,4 +376,18 @@ export default class UserController extends Controller {
                 ? 'Username already exists' : 'Something went wrong'
             : error ? error.message : 'Something is bad in the code';
     };
+    // Get the user fields
+    private getUserFields({ id, contacts, conversations, email,
+        firstName, lastName, username }: Store.IUser) {
+        return {
+            contacts, conversations, email,
+            firstName, id, lastName, username,
+        };
+    }
+    // Get the conversation fields
+    private getConversationFields({ id, messages, participants }: Store.IConversation) {
+        return {
+            id, messages, participants,
+        };
+    }
 }
