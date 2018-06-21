@@ -26,7 +26,7 @@ export const ConnectedLogin = connect(undefined,
     })(Login);
 
 export const ConnectedDashBoard = connect((state: Store.IAppState) => ({
-    update: state.conversation.update,
+    // update: state.conversation.update,
     user: state.users.user,
     users: state.users.all,
 }),

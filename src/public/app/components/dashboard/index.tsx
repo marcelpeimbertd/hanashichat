@@ -1,7 +1,10 @@
 import axios from 'axios';
 import React, { ChangeEvent } from 'react';
+import { Trans, translate } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Action } from 'redux-actions';
+import { joinRooms } from '../../socketio/config';
+import Lenguage from '../Settings/lenguage';
 import './dashboard';
 
 interface IDATA {
@@ -59,15 +62,17 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
         this.fetch(Array.from(this.state.fetching));
     }
     public render() {
+        const {t} = this.props;
         return <div className="dashboard">
             <div className="bloque">
                 <div className="profileIMG"
                     style={{ backgroundImage: 'url(/images/predefined/user-icon.png)' }}></div>
+                    <Lenguage />
             </div>
             <div className="bloque">
                 <Link className="logout" to="/login" onClick={this.logout}>Log <br /> out</Link>
                 <input type="search" className="searchUser"
-                    name="" id="searchUser" placeholder="Search" onChange={this.getUsers} />
+                    name="" id="searchUser" placeholder={t('Search')} onChange={this.getUsers} />
             </div>
             {this.showUsers(this.state.showUsers)}
         </div>;
@@ -285,14 +290,14 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
             );
         }
         return <div className="navs">
-            <div className="navContacts"><h1>Contacts</h1></div>
+            <div className="navContacts"><h1><Trans>Contacts</Trans></h1></div>
             {this.defineList(this.state.contacts,
                 'contact',
                 { className: 'contacts', onClick: this.clickContact },
                 { className: 'contact' },
                 <span className="delete"></span>,
             )}
-            <div className="navChats"><h1>Chats</h1></div>
+            <div className="navChats"><h1><Trans>Chats</Trans></h1></div>
             {this.defineList(this.state.conversations,
                 'conversation',
                 { className: 'conversations', onClick: this.clickContact },
@@ -368,4 +373,4 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
     }
 }
 
-export default DashBoard;
+export default translate('translations')(DashBoard);

@@ -1,5 +1,7 @@
 import axios from 'axios';
 import React from 'react';
+import { Trans, translate } from 'react-i18next';
+import { Options } from 'react-i18next/src/I18n';
 import { Redirect } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Action } from 'redux-actions';
@@ -12,8 +14,8 @@ interface ILoginProps {
 interface ILoginState {
     redirect: string;
 }
-class Login extends React.Component<ILoginProps, ILoginState> {
-    constructor(props: ILoginProps) {
+class Login extends React.Component<ILoginProps & Options, ILoginState> {
+    constructor(props: ILoginProps & Options) {
         super(props);
         this.state = {
             redirect: '',
@@ -43,23 +45,24 @@ class Login extends React.Component<ILoginProps, ILoginState> {
             });
     }
     public render() {
+        const { t } = this.props;
         if (this.state.redirect) {
             return <Redirect to="/dashboard" />;
         }
         return <div className="login">
             <form className="loginForm" action="/login" method="POST" onSubmit={this.sendLogin}>
                 <input type="username" className="field"
-                    name="username" id="username" placeholder="Enter your user name" />
-                <label htmlFor="username" className="field label">UserName</label>
+                    name="username" id="username" placeholder={t('Enter your user name')} />
+                <label htmlFor="username" className="field label"><Trans>UserName</Trans></label>
                 <input type="password" className="field"
-                    name="password" id="password" placeholder="Enter Password" />
-                <label htmlFor="password" className="field label">Password</label>
+                    name="password" id="password" placeholder={t('Enter Password')} />
+                <label htmlFor="password" className="field label"><Trans>Password</Trans></label>
                 <div className="field">
-                <div><input type="submit" value="LogIn" className="btn-submit" /></div>
+                    <div><input type="submit" value="LogIn" className="btn-submit" /></div>
                     <div><Link to="/register" className="btn-link">Register</Link></div>
                 </div>
             </form>
         </div>;
     }
 }
-export default Login;
+export default translate('translations')(Login);

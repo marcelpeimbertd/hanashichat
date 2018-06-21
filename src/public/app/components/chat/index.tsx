@@ -1,6 +1,7 @@
 import axios from 'axios';
 import moment from 'moment';
 import React from 'react';
+import { Trans, translate } from 'react-i18next';
 import { RouteProps } from 'react-router';
 import { Action } from 'redux-actions';
 import { updateConversation } from '../../socketio/config';
@@ -14,14 +15,17 @@ interface IChatProps extends RouteProps {
 
 type EspecialEvent = React.KeyboardEvent<HTMLTextAreaElement> | React.MouseEvent<HTMLButtonElement>;
 class Chat extends React.Component<IChatProps> {
+    public messagesBox: HTMLDivElement | undefined;
+    public interval: number[] = [];
     constructor(props: IChatProps) {
         super(props);
     }
     public componentDidMount() {
-        this.getMessages();
+        this.messagesBox = (document.getElementsByClassName('messagesbox')[0] as HTMLDivElement);
+        this.scrollDown(this.messagesBox);
     }
-    public getMessages() {
-        console.log('hi');
+    public componentDidUpdate() {
+        this.scrollDown(this.messagesBox);
     }
     public sendMessage = (event: EspecialEvent) => {
         if (!(event as React.KeyboardEvent<HTMLTextAreaElement>).shiftKey &&
@@ -50,13 +54,43 @@ class Chat extends React.Component<IChatProps> {
             (event.target as HTMLInputElement).value = '';
             event.preventDefault();
         }
+        if ((event as React.MouseEvent<HTMLButtonElement>).button === 0 &&
+            (event.target as HTMLButtonElement).className === 'btn') {
+            const data = {
+                conversationID: this.props.conversation.id,
+                current: this.props.conversation.messages.current,
+                newMessage: {
+                    date: new Date(),
+                    message: (((event.target as HTMLButtonElement)
+                        .parentElement as HTMLDivElement)
+                        .getElementsByClassName('clientBox')[0] as HTMLInputElement).value,
+                    userid: this.props.user.id,
+                },
+            };
+            axios.post('/message', data)
+                .then((response) => {
+                    if (response.data.err) {
+                        throw response.data.err;
+                    }
+                    this.props.fetchConversation(response.data);
+                    updateConversation(response.data.conversation);
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+            (((event.target as HTMLButtonElement)
+                .parentElement as HTMLDivElement)
+                .getElementsByClassName('clientBox')[0] as HTMLInputElement).value = '';
+            event.preventDefault();
+        }
     }
     public render() {
+        const { t } = this.props;
         const inputOptions = {
             className: 'clientBox',
             name: '',
             onKeyPress: this.sendMessage,
-            placeholder: 'Write a message',
+            placeholder: t('Write a message'),
             type: 'text',
         };
         return <div className="chatbox">
@@ -67,9 +101,14 @@ class Chat extends React.Component<IChatProps> {
             </div>
             <div className="senderbox">
                 <textarea {...inputOptions} />
-                <button className="btn" type="button">Send</button>
+                <button className="btn" type="button" onClick={this.sendMessage}><Trans>Send</Trans></button>
             </div>
         </div>;
+    }
+    private scrollDown = (element?: HTMLElement) => {
+        if (element) {
+            element.scrollTop = element.scrollHeight - element.clientHeight;
+        }
     }
     private splitMessages = () => {
 
@@ -125,7 +164,7 @@ class Chat extends React.Component<IChatProps> {
 
         return <div className="message">
             <div className="defaultWrapper">
-                <p className="message default">Say Hello</p>
+                <p className="message default"><Trans>Say Hello</Trans></p>
             </div>
         </div>;
     }
@@ -141,4 +180,4 @@ class Chat extends React.Component<IChatProps> {
     }
 }
 
-export default Chat;
+export default translate('translations')(Chat);
