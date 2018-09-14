@@ -9,7 +9,7 @@ interface ILanguage {
 }
 type ILanguages = ILanguage[];
 
-class Lenguage extends React.Component<Options>{
+class Lenguage extends React.Component<Options> {
     private languages = [{
         abbr: 'es',
         txt: 'Español',

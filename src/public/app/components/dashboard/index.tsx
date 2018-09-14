@@ -18,6 +18,7 @@ interface IFetching {
 }
 
 export interface IDashBoardProps {
+    t?: (t: string) => string;
     user: Store.IUser;
     users: Store.IUsers;
     update: Store.IConversation;
@@ -62,12 +63,12 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
         this.fetch(Array.from(this.state.fetching));
     }
     public render() {
-        const {t} = this.props;
+        const { t = (s: string) => s } = this.props;
         return <div className="dashboard">
             <div className="bloque">
                 <div className="profileIMG"
                     style={{ backgroundImage: 'url(/images/predefined/user-icon.png)' }}></div>
-                    <Lenguage />
+                <Lenguage />
             </div>
             <div className="bloque">
                 <Link className="logout" to="/login" onClick={this.logout}>Log <br /> out</Link>
@@ -118,7 +119,7 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
         }
     }
     private fetch = (fetcherArray: IFetching[]) => {
-        const fetchFns: { [key: string]: Function } = {
+        const fetchFns: { [key: string]: (args: any) => void } = {
             contacts: this.fetchContacts,
             conversations: this.fetchConversations,
         };
@@ -333,14 +334,14 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
             </ul>;
         }
         return <ul {...ulProps}>
-            {list.map((value: Store.IConversation) => {
-                if (value.messages.current) {
-                    const participant = value.participants.filter((value) => {
+            {list.map((conversation: Store.IConversation) => {
+                if (conversation.messages.current) {
+                    const participant = conversation.participants.filter((value) => {
                         return value.id !== this.props.user.id;
                     })[0];
                     let convParticipant: Store.IUser | undefined;
                     if (!participant) {
-                        const isMe = value.participants.every((value) => {
+                        const isMe = conversation.participants.every((value) => {
                             return value.id === this.props.user.id;
                         });
                         convParticipant = isMe ? this.props.user : undefined;
@@ -349,19 +350,19 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
                             return contact.id === participant.id;
                         });
                     }
-                    value.name = value.name ?
-                        value.name :
+                    conversation.name = conversation.name ?
+                        conversation.name :
                         convParticipant ?
                             convParticipant.firstName + ' ' + convParticipant.lastName :
                             participant.username;
-                    return <li {...liProps} id={value.id} key={value.id}>
-                        <Link to={`/dashboard/${value.id}`}>
+                    return <li {...liProps} id={conversation.id} key={conversation.id}>
+                        <Link to={`/dashboard/${conversation.id}`}>
                             <div className="profileIMG"
                                 style={{ backgroundImage: 'url(/images/predefined/user-icon.png)' }}></div>
                         </Link>
-                        <Link to={`/dashboard/${value.id}`}>
-                            {value.name} <br />
-                            <div className="lastMessage">{value.messages.current.message}</div>
+                        <Link to={`/dashboard/${conversation.id}`}>
+                            {conversation.name} <br />
+                            <div className="lastMessage">{conversation.messages.current.message}</div>
                         </Link>
                         {extraElements}
                     </li>;

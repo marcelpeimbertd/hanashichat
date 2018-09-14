@@ -8,6 +8,7 @@ import { updateConversation } from '../../socketio/config';
 import './chat';
 
 interface IChatProps extends RouteProps {
+    t?: (s: string) => string;
     user: Store.IUser;
     conversation: Store.IConversation;
     fetchConversation: (t1: Store.IConversationPayload) => Action<Store.IConversationPayload>;
@@ -85,7 +86,7 @@ class Chat extends React.Component<IChatProps> {
         }
     }
     public render() {
-        const { t } = this.props;
+        const { t = (s: string) => s } = this.props;
         const inputOptions = {
             className: 'clientBox',
             name: '',
