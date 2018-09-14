@@ -6,9 +6,9 @@ import session from 'express-session';
 import http from 'http';
 import morgan from 'morgan';
 import path from 'path';
-import initSockets from './config/socketio';
 import initMongoose from './config/mongoose';
 import initPassport from './config/passport';
+import initSockets from './config/socketio';
 import setApiRoutes from './routes/apiRoutes';
 
 try {

@@ -1,12 +1,12 @@
 import socketio from 'socket.io-client';
-import { store } from '../store/store';
-import { fetchConversationActionCreator } from './../store/reducers';
+import { store } from '../store';
+import { fetchConversation } from './../store/actions';
 
 const io = socketio({ autoConnect: false });
 
 io.on('chat', (data: string) => {
     const conversation: Store.IConversation = JSON.parse(data);
-    store.dispatch(fetchConversationActionCreator({ conversation }));
+    store.dispatch(fetchConversation({ conversation }));
 });
 
 export function connectIO() {

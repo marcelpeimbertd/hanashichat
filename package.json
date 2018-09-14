@@ -5,11 +5,11 @@
   "main": "/dist/server/index.js",
   "scripts": {
     "test": "jest",
-    "start": "node dist/server",
+    "start": "nodemon -r dotenv/config dist/server",
     "start-development": "nodemon dist/server --watch dist",
     "build": "webpack && tsc -p tsconfig.server.json",
     "build-watch": "concurrently \"mongod \" \"webpack -w\" \"tsc -p tsconfig.server.json -w\" \"nodemon -r dotenv/config dist/server --watch dist\"",
-    "build-watchdebbug": "concurrently \"mongod \" \"webpack -w\" \"tsc -p tsconfig.server.json -w\" \"nodemon -r dotenv/config --inspect dist/server --watch dist/server\"",
+    "build-watchDebug": "concurrently \"mongod \" \"webpack -w\" \"tsc -p tsconfig.server.json -w\" \"nodemon -r dotenv/config --inspect dist/server --watch dist/server\"",
     "build-server": "tsc -p tsconfig.server.json",
     "build-client": "webpack"
   },

@@ -17,13 +17,14 @@ interface IFetching {
     args: any[];
 }
 
-interface IDashBoardProps {
+export interface IDashBoardProps {
+    t?: (t: string) => string;
     user: Store.IUser;
     users: Store.IUsers;
     update: Store.IConversation;
-    fetchConversation: (t1: Store.IConversationPayload) => Action<Store.IConversationPayload>;
-    fetchUser: (t1: Store.IUserPayload) => Action<Store.IUserPayload>;
-    fetchUsers: (t1: Store.IUsersPayload) => Action<Store.IUsersPayload>;
+    fetchConversation: (conversation: Store.IConversation) => Action<Store.IConversationPayload>;
+    fetchUser: (user: Store.IUser) => Action<Store.IUserPayload>;
+    fetchUsers: (users: Store.IUsers) => Action<Store.IUsersPayload>;
 }
 interface IDashBoardState {
     showUsers: boolean;
@@ -62,12 +63,12 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
         this.fetch(Array.from(this.state.fetching));
     }
     public render() {
-        const {t} = this.props;
+        const { t = (s: string) => s } = this.props;
         return <div className="dashboard">
             <div className="bloque">
                 <div className="profileIMG"
                     style={{ backgroundImage: 'url(/images/predefined/user-icon.png)' }}></div>
-                    <Lenguage />
+                <Lenguage />
             </div>
             <div className="bloque">
                 <Link className="logout" to="/login" onClick={this.logout}>Log <br /> out</Link>
@@ -99,7 +100,7 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
                         throw response.data;
                     }
                     if (response.data.status) {
-                        this.props.fetchUsers(response.data);
+                        this.props.fetchUsers(response.data.users);
                         this.setState({
                             showUsers: true,
                         });
@@ -109,7 +110,7 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
                     console.log(err);
                 });
         } else {
-            this.props.fetchUsers({ users: [] });
+            this.props.fetchUsers([]);
             if (this.state.showUsers || this.state.fetching) {
                 this.setState({
                     showUsers: false,
@@ -118,7 +119,7 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
         }
     }
     private fetch = (fetcherArray: IFetching[]) => {
-        const fetchFns: { [key: string]: Function } = {
+        const fetchFns: { [key: string]: (args: any) => void } = {
             contacts: this.fetchContacts,
             conversations: this.fetchConversations,
         };
@@ -144,14 +145,14 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
             return isConvId || isContactID;
         }));
         if (conversation) {
-            this.props.fetchConversation({ conversation });
+            this.props.fetchConversation(conversation);
         }
     }
     private fetchContacts = (contacts: string[]) => {
         if (contacts.length !== this.state.contacts.length && contacts.length) {
             axios.post('/contacts')
                 .then((response) => {
-                    this.props.fetchUser(response.data);
+                    this.props.fetchUser(response.data.user);
                     this.setState({
                         contacts: response.data.contacts,
                         fetching: this.state.fetching.slice(1),
@@ -234,7 +235,7 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
                 if (response.data.status) {
                     data.conversation = response.data.conversation;
                     joinRooms([response.data.conversation]);
-                    this.props.fetchConversation(response.data);
+                    this.props.fetchConversation(response.data.conversation);
                     this.addContact(data);
                 }
             })
@@ -249,7 +250,7 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
                     throw response.data.err;
                 }
                 if (response.data.status) {
-                    this.props.fetchUser(response.data);
+                    this.props.fetchUser(response.data.user);
                     (document.getElementById('searchUser') as HTMLInputElement).setAttribute('textContent', '');
                     this.setState({
                         fetching: this.state.fetching.concat({
@@ -271,7 +272,7 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
                 if (response.data.err) {
                     throw response.data.err;
                 }
-                this.props.fetchUser(response.data);
+                this.props.fetchUser(response.data.user);
                 this.fetchContacts(response.data.user.contacts);
                 (document.getElementById('searchUser') as HTMLInputElement).setAttribute('textContent', '');
                 this.setState({ showUsers: false });
@@ -333,14 +334,14 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
             </ul>;
         }
         return <ul {...ulProps}>
-            {list.map((value: Store.IConversation) => {
-                if (value.messages.current) {
-                    const participant = value.participants.filter((value) => {
+            {list.map((conversation: Store.IConversation) => {
+                if (conversation.messages.current) {
+                    const participant = conversation.participants.filter((value) => {
                         return value.id !== this.props.user.id;
                     })[0];
                     let convParticipant: Store.IUser | undefined;
                     if (!participant) {
-                        const isMe = value.participants.every((value) => {
+                        const isMe = conversation.participants.every((value) => {
                             return value.id === this.props.user.id;
                         });
                         convParticipant = isMe ? this.props.user : undefined;
@@ -349,19 +350,19 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
                             return contact.id === participant.id;
                         });
                     }
-                    value.name = value.name ?
-                        value.name :
+                    conversation.name = conversation.name ?
+                        conversation.name :
                         convParticipant ?
                             convParticipant.firstName + ' ' + convParticipant.lastName :
                             participant.username;
-                    return <li {...liProps} id={value.id} key={value.id}>
-                        <Link to={`/dashboard/${value.id}`}>
+                    return <li {...liProps} id={conversation.id} key={conversation.id}>
+                        <Link to={`/dashboard/${conversation.id}`}>
                             <div className="profileIMG"
                                 style={{ backgroundImage: 'url(/images/predefined/user-icon.png)' }}></div>
                         </Link>
-                        <Link to={`/dashboard/${value.id}`}>
-                            {value.name} <br />
-                            <div className="lastMessage">{value.messages.current.message}</div>
+                        <Link to={`/dashboard/${conversation.id}`}>
+                            {conversation.name} <br />
+                            <div className="lastMessage">{conversation.messages.current.message}</div>
                         </Link>
                         {extraElements}
                     </li>;

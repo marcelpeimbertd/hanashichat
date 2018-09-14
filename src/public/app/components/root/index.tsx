@@ -4,22 +4,21 @@ import { RouteProps } from 'react-router';
 import { Link, Redirect } from 'react-router-dom';
 import { Action } from 'redux-actions';
 import { connectIO } from '../../socketio/config';
-import './app';
-import { IAppProps } from './index';
+import './root';
 
-export interface IAppProps extends RouteProps {
+export interface IRootProps extends RouteProps {
     user: Store.IUser;
     users: Store.IUsers;
-    fetchUser: (t1: Store.IUserPayload) => Action<Store.IUserPayload>;
+    fetchUser: (user: Store.IUser) => Action<Store.IUserPayload>;
 }
 
-interface IAppState {
+interface IRootState {
     isfetch: boolean;
     isLogged: boolean;
 }
 
-class App extends React.Component<IAppProps, IAppState> {
-    constructor(props: IAppProps) {
+class Root extends React.Component<IRootProps, IRootState> {
+    constructor(props: IRootProps) {
         super(props);
         this.state = {
             isLogged: false,
@@ -29,7 +28,7 @@ class App extends React.Component<IAppProps, IAppState> {
     public componentDidMount() {
         this.isLoggedIn();
     }
-    public componentWillReceiveProps(nextProps: IAppProps) {
+    public componentWillReceiveProps(nextProps: IRootProps) {
         if (nextProps.user.email && !this.state.isLogged) {
             this.setState({
                 isLogged: true,
@@ -46,7 +45,7 @@ class App extends React.Component<IAppProps, IAppState> {
                     }
                     if (data.user) {
                         connectIO();
-                        this.props.fetchUser(data);
+                        this.props.fetchUser(data.user);
                         this.setState({
                             isLogged: true,
                             isfetch: true,
@@ -75,9 +74,9 @@ class App extends React.Component<IAppProps, IAppState> {
         if (!this.state.isLogged && path !== '/login' && path !== '/register') {
             return <Redirect to="/login" />;
         }
-        return <div className="app">
+        return <div className="root">
             {this.props.children}
         </div>;
     }
 }
-export default App;
+export default Root;

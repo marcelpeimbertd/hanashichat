@@ -87,8 +87,8 @@ declare namespace Store {
         username: string;
     }
 
-    export interface IAppState {
-        users: IUsersState;
-        conversation: { current: IConversation, update: IConversation };
+    export interface IRootState {
+        users: IUsersState | undefined;
+        conversation: { current: IConversation, update: IConversation } | undefined;
     }
 }

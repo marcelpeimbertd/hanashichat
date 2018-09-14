@@ -8,6 +8,7 @@ import { updateConversation } from '../../socketio/config';
 import './chat';
 
 interface IChatProps extends RouteProps {
+    t?: (s: string) => string;
     user: Store.IUser;
     conversation: Store.IConversation;
     fetchConversation: (t1: Store.IConversationPayload) => Action<Store.IConversationPayload>;
@@ -45,7 +46,7 @@ class Chat extends React.Component<IChatProps> {
                     if (response.data.err) {
                         throw response.data.err;
                     }
-                    this.props.fetchConversation(response.data);
+                    this.props.fetchConversation(response.data.conversation);
                     updateConversation(response.data.conversation);
                 })
                 .catch((error) => {
@@ -72,7 +73,7 @@ class Chat extends React.Component<IChatProps> {
                     if (response.data.err) {
                         throw response.data.err;
                     }
-                    this.props.fetchConversation(response.data);
+                    this.props.fetchConversation(response.data.conversation);
                     updateConversation(response.data.conversation);
                 })
                 .catch((error) => {
@@ -85,7 +86,7 @@ class Chat extends React.Component<IChatProps> {
         }
     }
     public render() {
-        const { t } = this.props;
+        const { t = (s: string) => s } = this.props;
         const inputOptions = {
             className: 'clientBox',
             name: '',

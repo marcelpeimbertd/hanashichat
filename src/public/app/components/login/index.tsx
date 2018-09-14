@@ -8,8 +8,8 @@ import { Action } from 'redux-actions';
 import { connectIO } from '../../socketio/config';
 import './login';
 
-interface ILoginProps {
-    fetchUser: (t1: Store.IUserPayload) => Action<Store.IUserPayload>;
+export interface ILoginProps {
+    fetchUser: (user: Store.IUser) => Action<Store.IUserPayload>;
 }
 interface ILoginState {
     redirect: string;
@@ -37,7 +37,7 @@ class Login extends React.Component<ILoginProps & Options, ILoginState> {
                     throw data;
                 }
                 connectIO();
-                this.props.fetchUser({ user: data.user });
+                this.props.fetchUser(data.user);
                 this.setState({ redirect: data.redirect });
             })
             .catch((error) => {
