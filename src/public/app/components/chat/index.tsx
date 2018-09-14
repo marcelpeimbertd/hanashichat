@@ -45,7 +45,7 @@ class Chat extends React.Component<IChatProps> {
                     if (response.data.err) {
                         throw response.data.err;
                     }
-                    this.props.fetchConversation(response.data);
+                    this.props.fetchConversation(response.data.conversation);
                     updateConversation(response.data.conversation);
                 })
                 .catch((error) => {
@@ -72,7 +72,7 @@ class Chat extends React.Component<IChatProps> {
                     if (response.data.err) {
                         throw response.data.err;
                     }
-                    this.props.fetchConversation(response.data);
+                    this.props.fetchConversation(response.data.conversation);
                     updateConversation(response.data.conversation);
                 })
                 .catch((error) => {

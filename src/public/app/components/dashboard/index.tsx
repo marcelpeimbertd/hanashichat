@@ -17,13 +17,13 @@ interface IFetching {
     args: any[];
 }
 
-interface IDashBoardProps {
+export interface IDashBoardProps {
     user: Store.IUser;
     users: Store.IUsers;
     update: Store.IConversation;
-    fetchConversation: (t1: Store.IConversationPayload) => Action<Store.IConversationPayload>;
-    fetchUser: (t1: Store.IUserPayload) => Action<Store.IUserPayload>;
-    fetchUsers: (t1: Store.IUsersPayload) => Action<Store.IUsersPayload>;
+    fetchConversation: (conversation: Store.IConversation) => Action<Store.IConversationPayload>;
+    fetchUser: (user: Store.IUser) => Action<Store.IUserPayload>;
+    fetchUsers: (users: Store.IUsers) => Action<Store.IUsersPayload>;
 }
 interface IDashBoardState {
     showUsers: boolean;
@@ -99,7 +99,7 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
                         throw response.data;
                     }
                     if (response.data.status) {
-                        this.props.fetchUsers(response.data);
+                        this.props.fetchUsers(response.data.users);
                         this.setState({
                             showUsers: true,
                         });
@@ -109,7 +109,7 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
                     console.log(err);
                 });
         } else {
-            this.props.fetchUsers({ users: [] });
+            this.props.fetchUsers([]);
             if (this.state.showUsers || this.state.fetching) {
                 this.setState({
                     showUsers: false,
@@ -144,14 +144,14 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
             return isConvId || isContactID;
         }));
         if (conversation) {
-            this.props.fetchConversation({ conversation });
+            this.props.fetchConversation(conversation);
         }
     }
     private fetchContacts = (contacts: string[]) => {
         if (contacts.length !== this.state.contacts.length && contacts.length) {
             axios.post('/contacts')
                 .then((response) => {
-                    this.props.fetchUser(response.data);
+                    this.props.fetchUser(response.data.user);
                     this.setState({
                         contacts: response.data.contacts,
                         fetching: this.state.fetching.slice(1),
@@ -234,7 +234,7 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
                 if (response.data.status) {
                     data.conversation = response.data.conversation;
                     joinRooms([response.data.conversation]);
-                    this.props.fetchConversation(response.data);
+                    this.props.fetchConversation(response.data.conversation);
                     this.addContact(data);
                 }
             })
@@ -249,7 +249,7 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
                     throw response.data.err;
                 }
                 if (response.data.status) {
-                    this.props.fetchUser(response.data);
+                    this.props.fetchUser(response.data.user);
                     (document.getElementById('searchUser') as HTMLInputElement).setAttribute('textContent', '');
                     this.setState({
                         fetching: this.state.fetching.concat({
@@ -271,7 +271,7 @@ class DashBoard extends React.Component<IDashBoardProps, IDashBoardState> {
                 if (response.data.err) {
                     throw response.data.err;
                 }
-                this.props.fetchUser(response.data);
+                this.props.fetchUser(response.data.user);
                 this.fetchContacts(response.data.user.contacts);
                 (document.getElementById('searchUser') as HTMLInputElement).setAttribute('textContent', '');
                 this.setState({ showUsers: false });

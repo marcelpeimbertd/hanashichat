@@ -1,13 +1,12 @@
-import { createAction, handleAction, handleActions } from 'redux-actions';
+import { Action, handleActions, ReducerMap } from 'redux-actions';
+import { fetchConversation, fetchUser, fetchUsers, updateConversation } from './actions';
 
 // Conversation
 interface IConversationState {
     current: Store.IConversation;
     update: Store.IConversation;
 }
-const FETCH_CONVERSATION = 'FETCH_CONVERSATION';
-const UPDATE_CONVERSATION = 'UPDATE_CONVERSATION';
-const initialStateConversation: IConversationState = {
+export const initialStateConversation: IConversationState = {
     current: {
         id: '',
         messages: {
@@ -36,26 +35,31 @@ const initialStateConversation: IConversationState = {
     },
 };
 
-export const fetchConversationActionCreator = createAction<Store.IConversationPayload>(FETCH_CONVERSATION);
-
-export const updateConversationActionCreator = createAction<Store.IConversationPayload>(UPDATE_CONVERSATION);
-
-export const reducerConversation =
-    handleActions<IConversationState, Store.IConversationPayload>({
-        [FETCH_CONVERSATION]: (state, { payload = { conversation: initialStateConversation.current } }) => ({
+const mapReducerConversation: ReducerMap<IConversationState | undefined, Store.IConversationPayload> = {
+    [fetchConversation.toString()]: (
+        state = initialStateConversation,
+        {
+            payload = { conversation: initialStateConversation.current },
+        }) => ({
             ...state,
             current: payload.conversation,
         }),
-        [UPDATE_CONVERSATION]: (state, { payload = { conversation: initialStateConversation.current } }) => ({
+    [updateConversation.toString()]: (
+        state = initialStateConversation,
+        {
+            payload = { conversation: initialStateConversation.current },
+        }) => ({
             ...state,
             update: payload.conversation,
         }),
-    }, initialStateConversation);
+};
+export const conversation =
+    handleActions<IConversationState | undefined, Store.IConversationPayload>(
+        mapReducerConversation,
+        initialStateConversation);
 
 // Users
-const FETCH_USERS = 'users/FETCH_USERS';
-const FETCH_USER = 'users/FETCH_USER';
-const initialStateUser: Store.IUser = {
+export const initialStateUser: Store.IUser = {
     contacts: [],
     conversations: [],
     email: '',
@@ -70,18 +74,14 @@ export const initialStateUsers: Store.IUsersState = {
     user: initialStateUser,
 };
 
-export const fetchUsersActionCreator = createAction<Store.IUsersPayload>(FETCH_USERS);
-
-export const fetchUserActionCreator = createAction<Store.IUserPayload>(FETCH_USER);
-
 type UsersPayload = Store.IUsersPayload & Store.IUserPayload;
 
-export const reducersUsers = handleActions<Store.IUsersState, UsersPayload>({
-    [FETCH_USERS]: (state, { payload = { users: [] } }) => ({
+export const users = handleActions<Store.IUsersState | undefined, UsersPayload>({
+    [fetchUsers.toString()]: (state = initialStateUsers, { payload = { users: [] } }) => ({
         ...state,
         all: payload.users,
     }),
-    [FETCH_USER]: (state, { payload = { user: initialStateUser } }) => ({
+    [fetchUser.toString()]: (state = initialStateUsers, { payload = { user: initialStateUser } }) => ({
         ...state,
         user: payload.user,
     }),
