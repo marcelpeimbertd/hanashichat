@@ -6,3 +6,12 @@ dist/public/js
 
 node_modules/**/*
 package-lock.json
+
+sensitive-info.txt
+
+aws/
+
+*.pem
+
+curlAndDockerCommands.txt
+heptio-authenticator-aws.kubeconfig

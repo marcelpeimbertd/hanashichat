@@ -8,18 +8,16 @@ export default class UserController extends Controller {
     public model = User;
 
     // Create a new controller method that log in a 'regular' users
-    public login: RequestHandler = (req, res) => {
-        if (req.user) {
-            const successMessage = {
-                redirect: '/dashboard',
-                status: 1,
-                user: this.getUserFields((req.user as Store.IUser)),
-            };
-            res.send(JSON.stringify(successMessage));
-        } else {
-            // Redirect the user back to the main application page
-            res.redirect('error');
-        }
+    public login: RequestHandler = (req, res, next) => {
+        const {username, password} = req.body;
+        this.model.findOne({ username })
+            .then((user) => {
+                user
+                    ? user.authenticate(password)
+                        ? res.send({user: this.getUserFields(user as Store.IUser)})
+                        :  res.send({ message: 'Invalid password' })
+                    :  res.send({ message: 'Unknown user' });
+            });
     }
     // Create a new controller method that log in a 'regular' users
     public loginFails: RequestHandler = (req, res) => {

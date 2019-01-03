@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import passport from 'passport';
 import User, { UserDocumentType } from '../models/user';
 import loadStrategy from './strategies/local';

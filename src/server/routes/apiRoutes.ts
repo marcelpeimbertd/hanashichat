@@ -3,7 +3,6 @@ import { Express } from 'express-serve-static-core';
 import { PassportStatic } from 'passport';
 import ConversationController from '../controllers/conversationController';
 import UserController from '../controllers/userController';
-import User from '../models/user';
 
 export default function setAPIRoutes(app: Express, passport: PassportStatic/* , transporter: Transporter */) {
     const api = express.Router();

@@ -2,13 +2,13 @@
     "extends": "./tsconfig.json",
     "compilerOptions": {
         "sourceMap": true,
-        "outDir": "./dist/server",
-        "rootDir": "./src/server/",
+        "outDir": "./dist/authService",
+        "rootDir": "./src/authService/src/",
         "noEmit": false
     },
     "exclude": [
       "./src/public/",
-      "./src/authService/",
+      "./src/server/",
       "./__tests__/"
     ]
 }
